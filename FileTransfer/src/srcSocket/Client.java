@@ -17,6 +17,7 @@ public class Client{
 			public void run() {
 				try
 		        {
+					System.out.println("start request");
 		    		//prepare data
 		    		byte[] fileName = filename.getBytes(StandardCharsets.UTF_8);
 		    		byte[] fileNameLen = Misc.Int2Bytes(fileName.length);
@@ -40,6 +41,7 @@ public class Client{
 		            
 		            //close
 		            socket.close();
+		            System.out.println("end request");
 		        }
 		        catch(Exception e)
 		        {
@@ -56,6 +58,7 @@ public class Client{
 			public void run() {
 				try
 		        {
+					System.out.println("start send-response");
 		    		//prepare data
 					byte[] fileName = filename.getBytes(StandardCharsets.UTF_8);
 		    		byte[] fileNameLen = Misc.Int2Bytes(fileName.length);
@@ -76,6 +79,7 @@ public class Client{
 		            
 		            //close
 		            socket.close();
+		            System.out.println("end send-response");
 		        }
 		        catch(Exception e)
 		        {
@@ -92,6 +96,7 @@ public class Client{
 			public void run() {
 				try
 		        {
+					System.out.println("start send-info");
 		    		//prepare data
 		    		byte[] fileName = filename.getBytes(StandardCharsets.UTF_8);
 		    		byte[] fileNameLen = Misc.Int2Bytes(fileName.length);
@@ -118,6 +123,7 @@ public class Client{
 		            
 		            //close
 		            socket.close();
+		            System.out.println("end send-info");
 		        }
 		        catch(Exception e)
 		        {

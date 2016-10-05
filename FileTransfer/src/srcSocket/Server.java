@@ -88,7 +88,9 @@ public class Server{
     }
     
     void ReceiveRequest(byte[] data, DatagramSocket from) throws UnsupportedEncodingException{
-    	System.out.println("1");
+    	System.out.println("start receive-request");
+    	System.out.println("from: " + from.getInetAddress().getHostAddress());
+    	System.out.println("to: " + from.getLocalAddress().getHostAddress());
     	if (from.getInetAddress().getHostAddress() != from.getLocalAddress().getHostAddress()){
 	    	byte[] fileNameLen = new byte[4];
 			System.arraycopy(data, 0, fileNameLen, 0, 4);
@@ -101,12 +103,14 @@ public class Server{
 			File f = new File(Constants.FOLDER_SEED + name);
 			if (f.exists() && !f.isDirectory()){
 				new Client().sendRequestBack(from.getInetAddress(), name);
+				System.out.println("send response success!");
 			}
     	}
+    	System.out.println("end receive-request");
     }
     
 	void ReceiveResponse(byte[] data, DatagramSocket from){
-		System.out.println("A");
+		System.out.println("start receive-response....");
 	}
 	
 	void ReceiveSeedInfo(byte[] data, DatagramSocket from){

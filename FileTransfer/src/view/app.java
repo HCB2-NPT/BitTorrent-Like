@@ -103,11 +103,14 @@ public class app {
 					Main.server = null;
 				if (Main.server == null)
 				{
-					//Platform.exit();
-					//System.exit(0);
+					Platform.exit();
+					System.exit(0);
 				}
 			}
 		});
         s.start();
+        
+        //load
+        seed_Enter(null);
     }
 }
