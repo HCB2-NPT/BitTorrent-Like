@@ -33,7 +33,7 @@ public class Client{
 		            InetAddress host = InetAddress.getByName(Constants.HOST);
 		            
 		            //create socket and dgram
-		            DatagramSocket socket = new DatagramSocket(Constants.PORT);
+		            DatagramSocket socket = new DatagramSocket();
 		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, host, Constants.PORT);
 		            
 		            //send
@@ -45,7 +45,7 @@ public class Client{
 		        }
 		        catch(Exception e)
 		        {
-		            //e.printStackTrace();
+		            e.printStackTrace();
 		        }
 			}
 		});
@@ -71,7 +71,7 @@ public class Client{
 		    		System.arraycopy(fileName, 0, sendData, offset, fileName.length);
 		            
 		            //create socket and dgram
-		            DatagramSocket socket = new DatagramSocket(Constants.PORT);
+		            DatagramSocket socket = new DatagramSocket();
 		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, host, Constants.PORT);
 		            
 		            //send
@@ -115,7 +115,7 @@ public class Client{
 		    		System.arraycopy(seedLen, 0, sendData, offset, seedLen.length);
 		            
 		            //create socket and dgram
-		            DatagramSocket socket = new DatagramSocket(Constants.PORT);
+		            DatagramSocket socket = new DatagramSocket();
 		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, host, Constants.PORT);
 		            
 		            //send

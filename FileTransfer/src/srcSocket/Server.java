@@ -88,29 +88,39 @@ public class Server{
     }
     
     void ReceiveRequest(byte[] data, DatagramSocket from) throws UnsupportedEncodingException{
-    	System.out.println("start receive-request");
-    	System.out.println("from: " + from.getInetAddress().getHostAddress());
-    	System.out.println("to: " + from.getLocalAddress().getHostAddress());
-    	if (from.getInetAddress().getHostAddress() != from.getLocalAddress().getHostAddress()){
-	    	byte[] fileNameLen = new byte[4];
-			System.arraycopy(data, 0, fileNameLen, 0, 4);
-			int len = ByteBuffer.wrap(fileNameLen).getInt();
-			
-			byte[] fileName = new byte[len];
-			System.arraycopy(data, 4, fileName, 0, len);
-			String name = new String(fileName, "UTF-8");
-			
-			File f = new File(Constants.FOLDER_SEED + name);
-			if (f.exists() && !f.isDirectory()){
-				new Client().sendRequestBack(from.getInetAddress(), name);
-				System.out.println("send response success!");
-			}
+    	try{
+	    	System.out.println("start receive-request");
+	    	System.out.println("from: " + from.getInetAddress().getHostAddress());
+	    	System.out.println("to: " + from.getLocalAddress().getHostAddress());
+	    	if (from.getInetAddress().getHostAddress() != from.getLocalAddress().getHostAddress()){
+		    	byte[] fileNameLen = new byte[4];
+				System.arraycopy(data, 0, fileNameLen, 0, 4);
+				int len = ByteBuffer.wrap(fileNameLen).getInt();
+				
+				byte[] fileName = new byte[len];
+				System.arraycopy(data, 4, fileName, 0, len);
+				String name = new String(fileName, "UTF-8");
+				
+				File f = new File(Constants.FOLDER_SEED + name);
+				if (f.exists() && !f.isDirectory()){
+					new Client().sendRequestBack(from.getInetAddress(), name);
+					System.out.println("send response success!");
+				}
+	    	}
+	    	System.out.println("end receive-request");
     	}
-    	System.out.println("end receive-request");
+    	catch (Exception e){
+    		e.printStackTrace();
+    	}
     }
     
 	void ReceiveResponse(byte[] data, DatagramSocket from){
-		System.out.println("start receive-response....");
+		try{
+			System.out.println("start receive-response.... undone!");
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	void ReceiveSeedInfo(byte[] data, DatagramSocket from){
