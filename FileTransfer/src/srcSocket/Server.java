@@ -43,7 +43,10 @@ public class Server{
     	byte[] receivedData;
     	byte[] data;
     	byte[] dataType = new byte[skGlobals.dataType_Size];
+    	byte[] ip;
+    	byte[] ipLen = new byte[4];
     	String type;
+    	String Ip;
     	
     	active = true;
         while (active)
@@ -54,24 +57,39 @@ public class Server{
 				socket.receive(packet);
                 
                 receivedData = packet.getData();
-                data = new byte[receivedData.length - 1];
-                System.arraycopy(receivedData, 1, data, 0, receivedData.length - 1);
                 
-                System.arraycopy(receivedData, 0, dataType, 0, 1);
+                int offset = 0;
+                
+                System.arraycopy(receivedData, offset, dataType, 0, dataType.length);
                 type = new String(dataType);
+                
+                offset += dataType.length;
+                
+                System.arraycopy(receivedData, offset, ipLen, 0, ipLen.length);
+                ip = new byte[ByteBuffer.wrap(ipLen).getInt()];
+                
+                offset += ipLen.length;
+                
+                System.arraycopy(receivedData, offset, ip, 0, ip.length);
+                Ip = new String(ip);
+                
+                offset += ip.length;
+                
+                data = new byte[receivedData.length - offset];
+                System.arraycopy(receivedData, offset, data, 0, data.length);
                 
                 switch(type){
 	                case skGlobals.dataType_Request:
-	                	ReceiveRequest(data, socket);
+	                	ReceiveRequest(data, Ip);
 	            		break;
 	            	case skGlobals.dataType_RequestBack:
-	            		ReceiveResponse(data, socket);
+	            		ReceiveResponse(data, Ip);
 	            		break;
 	            	case skGlobals.dataType_RequestSeed:
-	            		ReceiveSeedInfo(data, socket);
+	            		ReceiveSeedInfo(data, Ip);
 	            		break;
 	            	case skGlobals.dataType_SendData:
-	            		ReceiveData(data, socket);
+	            		ReceiveData(data, Ip);
 	            		break;
                 }
             }
@@ -87,12 +105,12 @@ public class Server{
         return true;
     }
     
-    void ReceiveRequest(byte[] data, DatagramSocket from) throws UnsupportedEncodingException{
+    void ReceiveRequest(byte[] data, String from) throws UnsupportedEncodingException{
     	try{
 	    	System.out.println("start receive-request");
-	    	System.out.println("from: " + from.getInetAddress().getHostAddress());
-	    	System.out.println("to: " + from.getLocalAddress().getHostAddress());
-	    	if (from.getInetAddress().getHostAddress() != from.getLocalAddress().getHostAddress()){
+	    	System.out.println("from: " + from);
+	    	System.out.println("to: " + Constants.getMyAddress());
+	    	if (from != Constants.getMyAddress()){
 		    	byte[] fileNameLen = new byte[4];
 				System.arraycopy(data, 0, fileNameLen, 0, 4);
 				int len = ByteBuffer.wrap(fileNameLen).getInt();
@@ -103,7 +121,7 @@ public class Server{
 				
 				File f = new File(Constants.FOLDER_SEED + name);
 				if (f.exists() && !f.isDirectory()){
-					new Client().sendRequestBack(from.getInetAddress(), name);
+					new Client().sendRequestBack(from, name);
 					System.out.println("send response success!");
 				}
 	    	}
@@ -114,7 +132,7 @@ public class Server{
     	}
     }
     
-	void ReceiveResponse(byte[] data, DatagramSocket from){
+	void ReceiveResponse(byte[] data, String from){
 		try{
 			System.out.println("start receive-response.... undone!");
 		}
@@ -123,11 +141,11 @@ public class Server{
 		}
 	}
 	
-	void ReceiveSeedInfo(byte[] data, DatagramSocket from){
+	void ReceiveSeedInfo(byte[] data, String from){
 		
 	}
 	
-	void ReceiveData(byte[] data, DatagramSocket from){
+	void ReceiveData(byte[] data, String from){
 		
 	}
 }

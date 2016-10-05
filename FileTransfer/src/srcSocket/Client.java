@@ -19,18 +19,25 @@ public class Client{
 		        {
 					System.out.println("start request");
 		    		//prepare data
+					byte[] myIp = Constants.MY_ADDRESS;
+					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
 		    		byte[] fileName = filename.getBytes(StandardCharsets.UTF_8);
 		    		byte[] fileNameLen = Misc.Int2Bytes(fileName.length);
-		    		byte[] sendData = new byte[skGlobals.dataType_bRequest.length + fileNameLen.length + fileName.length];
+		    		byte[] sendData = new byte[skGlobals.dataType_bRequest.length + myIpLen.length + myIp.length + fileNameLen.length + fileName.length];
 		    		int offset = 0;
 		    		System.arraycopy(skGlobals.dataType_bRequest, 0, sendData, offset, skGlobals.dataType_bRequest.length);
 		    		offset += skGlobals.dataType_bRequest.length;
+		    		System.arraycopy(myIpLen, 0, sendData, offset, myIpLen.length);
+		    		offset += myIpLen.length;
+		    		System.arraycopy(myIp, 0, sendData, offset, myIp.length);
+		    		offset += myIp.length;
 		    		System.arraycopy(fileNameLen, 0, sendData, offset, fileNameLen.length);
 		    		offset += fileNameLen.length;
 		    		System.arraycopy(fileName, 0, sendData, offset, fileName.length);
 		    		
 		        	//get host
 		            InetAddress host = InetAddress.getByName(Constants.HOST);
+		            System.out.println(Inet4Address.getLocalHost().getHostAddress());
 		            
 		            //create socket and dgram
 		            DatagramSocket socket = new DatagramSocket();
@@ -45,14 +52,14 @@ public class Client{
 		        }
 		        catch(Exception e)
 		        {
-		            e.printStackTrace();
+		            //e.printStackTrace();
 		        }
 			}
 		});
     	t.start();
     }
     
-    public void sendRequestBack(InetAddress host, String filename){
+    public void sendRequestBack(String host, String filename){
     	Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -60,19 +67,25 @@ public class Client{
 		        {
 					System.out.println("start send-response");
 		    		//prepare data
+					byte[] myIp = Constants.MY_ADDRESS;
+					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
 					byte[] fileName = filename.getBytes(StandardCharsets.UTF_8);
 		    		byte[] fileNameLen = Misc.Int2Bytes(fileName.length);
-		    		byte[] sendData = new byte[skGlobals.dataType_bRequestBack.length];
+		    		byte[] sendData = new byte[skGlobals.dataType_bRequestBack.length + myIpLen.length + myIp.length + fileNameLen.length + fileName.length];
 		    		int offset = 0;
 		    		System.arraycopy(skGlobals.dataType_bRequestBack, 0, sendData, offset, skGlobals.dataType_bRequestBack.length);
 		    		offset += skGlobals.dataType_bRequest.length;
+		    		System.arraycopy(myIpLen, 0, sendData, offset, myIpLen.length);
+		    		offset += myIpLen.length;
+		    		System.arraycopy(myIp, 0, sendData, offset, myIp.length);
+		    		offset += myIp.length;
 		    		System.arraycopy(fileNameLen, 0, sendData, offset, fileNameLen.length);
 		    		offset += fileNameLen.length;
 		    		System.arraycopy(fileName, 0, sendData, offset, fileName.length);
 		            
 		            //create socket and dgram
 		            DatagramSocket socket = new DatagramSocket();
-		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, host, Constants.PORT);
+		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(host), Constants.PORT);
 		            
 		            //send
 		            socket.send(packet);
@@ -90,7 +103,7 @@ public class Client{
     	t.start();
     }
     
-    public void sendRequestSeed(InetAddress host, String filename, long offset, long len){
+    public void sendRequestSeed(String host, String filename, long offset, long len){
     	Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -98,14 +111,20 @@ public class Client{
 		        {
 					System.out.println("start send-info");
 		    		//prepare data
+					byte[] myIp = Constants.MY_ADDRESS;
+					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
 		    		byte[] fileName = filename.getBytes(StandardCharsets.UTF_8);
 		    		byte[] fileNameLen = Misc.Int2Bytes(fileName.length);
 		    		byte[] seedOffset = Misc.Long2Bytes(offset);
 		    		byte[] seedLen = Misc.Long2Bytes(len);
-		    		byte[] sendData = new byte[skGlobals.dataType_bRequest.length + fileNameLen.length + fileName.length];
+		    		byte[] sendData = new byte[skGlobals.dataType_bRequest.length + myIpLen.length + myIp.length + fileNameLen.length + fileName.length + seedOffset.length + seedLen.length];
 		    		int offset = 0;
 		    		System.arraycopy(skGlobals.dataType_bRequest, 0, sendData, offset, skGlobals.dataType_bRequest.length);
 		    		offset += skGlobals.dataType_bRequest.length;
+		    		System.arraycopy(myIpLen, 0, sendData, offset, myIpLen.length);
+		    		offset += myIpLen.length;
+		    		System.arraycopy(myIp, 0, sendData, offset, myIp.length);
+		    		offset += myIp.length;
 		    		System.arraycopy(fileNameLen, 0, sendData, offset, fileNameLen.length);
 		    		offset += fileNameLen.length;
 		    		System.arraycopy(fileName, 0, sendData, offset, fileName.length);
@@ -116,7 +135,7 @@ public class Client{
 		            
 		            //create socket and dgram
 		            DatagramSocket socket = new DatagramSocket();
-		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, host, Constants.PORT);
+		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(host), Constants.PORT);
 		            
 		            //send
 		            socket.send(packet);
