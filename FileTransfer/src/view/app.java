@@ -1,29 +1,25 @@
 package view;
 
 import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 
 import application.Main;
 import config.Constants;
+import helper.MessageBox;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.stage.FileChooser;
 import srcSocket.*;
 
 public class app {
@@ -48,29 +44,32 @@ public class app {
 
     @FXML
     void sender_Enter(ActionEvent event) {
-    	String fileName = requestField.getText();
-    	if (!MappingFiles.getMap().containsKey(fileName)){
-	    	if (Main.server != null){
+    	if (Main.server != null && Main.server.isActive()){
+	    	String fileName = requestField.getText();
+	    	if (!MappingFiles.getMap().containsKey(fileName)){
 		    	File f = new File(Constants.FOLDER_SEED + fileName);
 		    	if (!f.exists()){
 			    	Thread c = new Thread(new Runnable() {
 						@Override
 						public void run() {
-							new Client().sendRequest(f.getName());
+							Client.sendRequest(f.getName());
 						}
 					});
 			        c.start();
 		    	}
 		    	else{
-		    		System.out.println("File exists!");
+		    		//System.out.println("File exists!");
+		    		MessageBox.Show("File exists!", "Notifying");
 		    	}
-	    	}
+		    }
 	    	else{
-	    		System.out.println("Server is not opened!");
+	    		//System.out.println("File being downloaded!");
+	    		MessageBox.Show("File being downloaded!", "Notifying");
 	    	}
-	    }
+    	}
     	else{
-    		System.out.println("File being downloaded!");
+    		//System.out.println("Server is not opened!");
+    		MessageBox.Show("Server is not opened!", "Notifying");
     	}
     }
     

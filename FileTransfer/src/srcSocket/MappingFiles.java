@@ -3,9 +3,9 @@ package srcSocket;
 import java.util.HashMap;
 
 public final class MappingFiles {
-	private static HashMap _map = new HashMap();
+	private static HashMap<String, DownloadingFileInfo> _map = new HashMap<String, DownloadingFileInfo>();
 	
-	public static HashMap getMap(){
+	public static HashMap<String, DownloadingFileInfo> getMap(){
 		return _map;
 	}
 }

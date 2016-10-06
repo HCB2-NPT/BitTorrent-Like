@@ -1,5 +1,9 @@
 package srcSocket;
 
+import java.io.*;
+
+import config.Constants;
+
 public final class Misc {
 	public static byte[] Int2Bytes(int i)
     {
@@ -28,4 +32,17 @@ public final class Misc {
 
       return result;
     }
+	
+	public static void createTempFile(String fileName, long len) throws IOException{
+		//create file-name: Constants.PREFIX_EMPTY_FILE + fileName
+		FileOutputStream s = new FileOutputStream(new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + fileName));
+		while (len > 0){
+			int k = (int) Math.min(2000000000, len);
+			byte[] buf = new byte[k];
+			s.write(buf);
+			len -= k;
+		}
+		s.flush();
+		s.close();
+	}
 }
