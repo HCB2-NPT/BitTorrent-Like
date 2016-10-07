@@ -223,13 +223,13 @@ public class Server{
 						sendLen = (int) Math.min(Length - Offset, Constants.DATA_BUFFER_MAXSIZE);
 						sendData = new byte[sendLen];
 						
-						input.read(sendData);
+						sendLen = input.read(sendData);
 						if (sendLen + Offset >= Length){
-							Client.sendData(from, name, Offset, sendLen, data, true);
+							Client.sendData(from, name, Offset, sendLen, sendData, true);
 							break;
 						}
 						else{
-							Client.sendData(from, name, Offset, sendLen, data, false);
+							Client.sendData(from, name, Offset, sendLen, sendData, false);
 							Offset += sendLen;
 							input.skip(sendLen);
 						}
@@ -295,6 +295,7 @@ public class Server{
 								SentData miss = dfi.getARangeLoss();
 								if (miss == null){
 									new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name).renameTo(new File(Constants.FOLDER_SEED + name));
+									MappingFiles.getMap().remove(name);
 									//MessageBox.Show(name + " is downloaded!", "Notify");
 									System.out.println("Download complete!");
 								}else{
