@@ -26,8 +26,8 @@ public class Server{
         }
         catch( Exception ex )
         {
-            //System.out.println("Problem creating socket on port: " + Constants.PORT);
-        	MessageBox.Show("Problem creating socket on port: " + Constants.PORT, "Shutdown...");
+            System.out.println("Problem creating socket on port: " + Constants.PORT);
+        	//MessageBox.Show("Problem creating socket on port: " + Constants.PORT, "Shutdown...");
             return false;
         }
     	
@@ -82,6 +82,9 @@ public class Server{
 	            		break;
 	            	case skGlobals.dataType_SendData_Continue:
 	            		ReceiveData(data, Ip, false);
+	            		break;
+	            	case skGlobals.dataType_SendData_End:
+	            		ReceiveData(data, Ip, true);
 	            		break;
                 }
             }
@@ -166,7 +169,7 @@ public class Server{
 					}
 					
 					if (fLen > 1000)
-						dfi.MaxLengthForSending = (int) Math.min(dfi.FileLength / (dfi.NSeeders * 8), 100000000);
+						dfi.MaxLengthForSending = (int) Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000);
 					int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
 					Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
 					dfi.Offset += lengthForSending;
@@ -284,8 +287,8 @@ public class Server{
 								SentData miss = dfi.getARangeLoss();
 								if (miss == null){
 									new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name).renameTo(new File(Constants.FOLDER_SEED + name));
-									MessageBox.Show(name + " is downloaded!", "Notify");
-									//System.out.println("Download complete!");
+									//MessageBox.Show(name + " is downloaded!", "Notify");
+									System.out.println("Download complete!");
 								}else{
 									int lengthForSending = (int) Math.min(miss.Length - miss.Offset, dfi.MaxLengthForSending);
 									Client.sendSeedInfo(from, name, miss.Offset, lengthForSending);

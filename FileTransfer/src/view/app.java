@@ -58,18 +58,18 @@ public class app {
 			        c.start();
 		    	}
 		    	else{
-		    		//System.out.println("File exists!");
-		    		MessageBox.Show("File exists!", "Notifying");
+		    		System.out.println("File exists!");
+		    		//MessageBox.Show("File exists!", "Notifying");
 		    	}
 		    }
 	    	else{
-	    		//System.out.println("File being downloaded!");
-	    		MessageBox.Show("File being downloaded!", "Notifying");
+	    		System.out.println("File being downloaded!");
+	    		//MessageBox.Show("File being downloaded!", "Notifying");
 	    	}
     	}
     	else{
-    		//System.out.println("Server is not opened!");
-    		MessageBox.Show("Server is not opened!", "Notifying");
+    		System.out.println("Server is not opened!");
+    		//MessageBox.Show("Server is not opened!", "Notifying");
     	}
     }
     
