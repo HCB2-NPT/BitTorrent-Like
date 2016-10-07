@@ -109,6 +109,7 @@ public class Server{
 			    	System.out.println("start receive-request");
 			    	System.out.println("from: " + from);
 			    	System.out.println("to: " + Constants.getMyAddress());
+			    	
 			    	if (from != Constants.getMyAddress()){
 				    	byte[] fileNameLen = new byte[4];
 						System.arraycopy(data, 0, fileNameLen, 0, 4);
@@ -140,7 +141,9 @@ public class Server{
 			public void run() {
 				try{
 					System.out.println("start receive-response");
-					
+					System.out.println("from: " + from);
+			    	System.out.println("to: " + Constants.getMyAddress());
+			    	
 					byte[] fileNameLen = new byte[4];
 					System.arraycopy(data, 0, fileNameLen, 0, 4);
 					int len = ByteBuffer.wrap(fileNameLen).getInt();
@@ -190,7 +193,9 @@ public class Server{
 			public void run() {
 				try{
 					System.out.println("start receive:seed-info");
-					
+					System.out.println("from: " + from);
+			    	System.out.println("to: " + Constants.getMyAddress());
+			    	
 					byte[] fileNameLen = new byte[4];
 					System.arraycopy(data, 0, fileNameLen, 0, 4);
 					int len = ByteBuffer.wrap(fileNameLen).getInt();
@@ -213,7 +218,7 @@ public class Server{
 					//read file-data
 					int sendLen;
 					byte[] sendData;
-					BufferedInputStream input = new BufferedInputStream(new FileInputStream(Constants.FOLDER_SEED + fileName));
+					BufferedInputStream input = new BufferedInputStream(new FileInputStream(Constants.FOLDER_SEED + name));
 					input.skip(Offset);
 					while(Offset < Length){
 						sendLen = (int) Math.min(Length - Offset, Constants.DATA_BUFFER_MAXSIZE);
@@ -246,7 +251,9 @@ public class Server{
 			public void run() {
 				try{
 					System.out.println("start receive-data");
-					
+					System.out.println("from: " + from);
+			    	System.out.println("to: " + Constants.getMyAddress());
+			    	
 					byte[] fileNameLen = new byte[4];
 					System.arraycopy(data, 0, fileNameLen, 0, 4);
 					int len = ByteBuffer.wrap(fileNameLen).getInt();
@@ -275,8 +282,8 @@ public class Server{
 				    fh.close();
 					
 					if (isEnd){
-						if (MappingFiles.getMap().containsKey(fileName)){
-							DownloadingFileInfo dfi = MappingFiles.getMap().get(fileName);
+						if (MappingFiles.getMap().containsKey(name)){
+							DownloadingFileInfo dfi = MappingFiles.getMap().get(name);
 							dfi.Complete(Offset, Length);
 							if (dfi.Offset < dfi.FileLength){
 								int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
