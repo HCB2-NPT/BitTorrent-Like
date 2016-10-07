@@ -272,13 +272,13 @@ public class Server{
 					int Length = ByteBuffer.wrap(l).getInt();
 					
 					byte[] d = new byte[Length];
-					System.arraycopy(data, 4 + len + 8 + 8, d, 0, Length);
+					System.arraycopy(data, 4 + len + 8 + 4, d, 0, Length);
 					
 					//write file-data
 					RandomAccessFile fh = new RandomAccessFile(new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name), "rw");
-				    fh.seek(3L);
+				    fh.seek(Offset);
 				    fh.read(new byte[Length]);
-				    fh.seek(3L);
+				    fh.seek(Offset);
 				    fh.write(d);
 				    fh.close();
 					

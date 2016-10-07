@@ -67,6 +67,8 @@ public class DownloadingFileInfo {
 	public SentData getARangeLoss(){
 		if (ListSentData.size() == 1){
 			SentData s = ListSentData.get(0);
+			if (s.Offset == 0 && s.Length == FileLength)
+				return null;
 			if (s.Offset == 0){
 				SentData newI = new SentData();
 				newI.Offset = s.Offset + s.Length;
