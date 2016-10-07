@@ -8,7 +8,7 @@ public class DownloadingFileInfo {
 	public long Offset = 0;
 	public long FileLength = 0;
 	public int  NSeeders = 0;
-	public int 	MaxLengthForSending = 1000;
+	public int 	MaxLengthForSending = 0;
 	public ArrayList<SentData> ListSentData = new ArrayList<SentData>();
 	
 	private Comparator<SentData> comparator = new Comparator<SentData>() {

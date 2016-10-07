@@ -171,8 +171,7 @@ public class Server{
 						Misc.createTempFile(name, fLen);
 					}
 					
-					if (fLen > 1000)
-						dfi.MaxLengthForSending = (int) Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000);
+					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000), 10000);
 					int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
 					Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
 					dfi.Offset += lengthForSending;
@@ -225,13 +224,15 @@ public class Server{
 						sendData = new byte[sendLen];
 						
 						input.read(sendData);
-						if (sendLen + Offset >= Length)
+						if (sendLen + Offset >= Length){
 							Client.sendData(from, name, Offset, sendLen, data, true);
-						else
+							break;
+						}
+						else{
 							Client.sendData(from, name, Offset, sendLen, data, false);
-						
-						Offset += sendLen;
-						input.skip(sendLen);
+							Offset += sendLen;
+							input.skip(sendLen);
+						}
 					}
 					input.close();
 					
