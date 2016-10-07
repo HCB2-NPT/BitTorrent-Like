@@ -165,7 +165,8 @@ public class Server{
 						Misc.createTempFile(name, fLen);
 					}
 					
-					dfi.MaxLengthForSending = (int) Math.min(dfi.FileLength / (dfi.NSeeders * 8), 1000000000);
+					if (fLen > 1000)
+						dfi.MaxLengthForSending = (int) Math.min(dfi.FileLength / (dfi.NSeeders * 8), 100000000);
 					int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
 					Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
 					dfi.Offset += lengthForSending;
@@ -287,7 +288,7 @@ public class Server{
 									//System.out.println("Download complete!");
 								}else{
 									int lengthForSending = (int) Math.min(miss.Length - miss.Offset, dfi.MaxLengthForSending);
-									Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
+									Client.sendSeedInfo(from, name, miss.Offset, lengthForSending);
 									System.out.println("Download missed data!");
 								}
 							}

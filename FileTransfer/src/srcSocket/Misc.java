@@ -34,8 +34,11 @@ public final class Misc {
     }
 	
 	public static void createTempFile(String fileName, long len) throws IOException{
-		//create file-name: Constants.PREFIX_EMPTY_FILE + fileName
-		FileOutputStream s = new FileOutputStream(new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + fileName));
+		File f = new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + fileName);
+		//delete file if exist
+		f.deleteOnExit();
+		//create file
+		FileOutputStream s = new FileOutputStream(f);
 		while (len > 0){
 			int k = (int) Math.min(2000000000, len);
 			byte[] buf = new byte[k];

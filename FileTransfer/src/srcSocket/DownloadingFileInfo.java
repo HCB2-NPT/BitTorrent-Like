@@ -8,7 +8,7 @@ public class DownloadingFileInfo {
 	public long Offset = 0;
 	public long FileLength = 0;
 	public int  NSeeders = 0;
-	public int 	MaxLengthForSending = 0;
+	public int 	MaxLengthForSending = 1000;
 	public ArrayList<SentData> ListSentData = new ArrayList<SentData>();
 	
 	private Comparator<SentData> comparator = new Comparator<SentData>() {
@@ -65,12 +65,26 @@ public class DownloadingFileInfo {
 	}
 	
 	public SentData getARangeLoss(){
-		if (ListSentData.size() > 1){
+		if (ListSentData.size() == 1){
+			SentData s = ListSentData.get(0);
+			if (s.Offset == 0){
+				SentData newI = new SentData();
+				newI.Offset = s.Offset + s.Length;
+				newI.Length = Math.min(FileLength - newI.Offset, MaxLengthForSending);
+				return newI;
+			}
+			else{
+				SentData newI = new SentData();
+				newI.Length = Math.min(s.Offset - newI.Offset, MaxLengthForSending);
+				return newI;
+			}
+		}
+		else if (ListSentData.size() > 1){
 			SentData newI = new SentData();
 			SentData a = ListSentData.get(0);
 			SentData b = ListSentData.get(1);
 			newI.Offset = a.Offset + a.Length;
-			newI.Length = b.Offset - newI.Offset;
+			newI.Length = Math.min(b.Offset - newI.Offset, MaxLengthForSending);
 			return newI;
 		}
 		else{
