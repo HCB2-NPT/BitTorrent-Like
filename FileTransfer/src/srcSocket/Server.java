@@ -171,7 +171,7 @@ public class Server{
 						Misc.createTempFile(name, fLen);
 					}
 					
-					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000), 10000);
+					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
 					int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
 					Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
 					dfi.Offset += lengthForSending;
@@ -212,7 +212,7 @@ public class Server{
 					int Length = ByteBuffer.wrap(l).getInt();
 					
 					System.out.println("end receive:seed-info");
-					System.out.println("start send-data");
+					System.out.println("start server:send-data");
 					
 					//read file-data
 					int sendLen;
@@ -236,7 +236,7 @@ public class Server{
 					}
 					input.close();
 					
-					System.out.println("end send-data");
+					System.out.println("end server:send-data");
 				}
 				catch (Exception e){
 					//e.printStackTrace();
@@ -310,7 +310,7 @@ public class Server{
 					System.out.println("end receive-data");
 				}
 				catch (Exception e){
-					//e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		});

@@ -159,7 +159,7 @@ public final class Client{
 			public void run() {
 				try
 		        {
-					System.out.println("start send-data");
+					System.out.println("start client:send-data");
 		    		//prepare data
 					byte[] myIp = Constants.MY_ADDRESS;
 					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
@@ -197,7 +197,7 @@ public final class Client{
 		            
 		            //close
 		            socket.close();
-		            System.out.println("end send-data");
+		            System.out.println("end client:send-data");
 		        }
 		        catch(Exception e)
 		        {
