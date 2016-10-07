@@ -282,6 +282,7 @@ public class Server{
 							}else{
 								SentData miss = dfi.getARangeLoss();
 								if (miss == null){
+									new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name).renameTo(new File(Constants.FOLDER_SEED + name));
 									MessageBox.Show(name + " is downloaded!", "Notify");
 									//System.out.println("Download complete!");
 								}else{
