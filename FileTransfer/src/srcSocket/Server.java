@@ -162,19 +162,21 @@ public class Server{
 						dfi.NSeeders++;
 					}else{
 						dfi = new DownloadingFileInfo();
+						MappingFiles.getMap().put(name, dfi);
 						dfi.Name = name;
 						dfi.FileLength = fLen;
 						dfi.NSeeders++;
-						MappingFiles.getMap().put(name, dfi);
 						
 						//create empty file
 						Misc.createTempFile(name, fLen);
 					}
 					
-					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
-					int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
-					Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
-					dfi.Offset += lengthForSending;
+					synchronized (dfi.readLocker){
+						dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
+						int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
+						Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
+						dfi.Offset += lengthForSending;
+					}
 					
 					System.out.println("end receive-response");
 				}
@@ -186,6 +188,7 @@ public class Server{
     	t.start();
 	}
 	
+	static Object readLocker = new Object();
 	void ReceiveSeedInfo(byte[] data, String from){
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -215,26 +218,31 @@ public class Server{
 					System.out.println("start server:send-data");
 					
 					//read file-data
+					long off = Offset;
+					long stop = Offset + Length;
 					int sendLen;
 					byte[] sendData;
-					BufferedInputStream input = new BufferedInputStream(new FileInputStream(Constants.FOLDER_SEED + name));
-					input.skip(Offset);
-					while(Offset < Length){
-						sendLen = (int) Math.min(Length - Offset, Constants.DATA_BUFFER_MAXSIZE);
+					//BufferedInputStream input;
+					while(off < stop){
+						sendLen = (int) Math.min(stop - off, Constants.DATA_BUFFER_MAXSIZE);
 						sendData = new byte[sendLen];
 						
-						sendLen = input.read(sendData);
-						if (sendLen + Offset >= Length){
-							Client.sendData(from, name, Offset, sendLen, sendData, true);
+						synchronized (readLocker){
+							BufferedInputStream input = new BufferedInputStream(new FileInputStream(Constants.FOLDER_SEED + name));
+							input.skip(off);
+							sendLen = input.read(sendData);
+							input.close();
+						}
+						
+						if (sendLen + off >= Length){
+							Client.sendData(from, name, off, sendLen, sendData, true);
 							break;
 						}
 						else{
-							Client.sendData(from, name, Offset, sendLen, sendData, false);
-							Offset += sendLen;
-							input.skip(sendLen);
+							Client.sendData(from, name, off, sendLen, sendData, false);
+							off += sendLen;
 						}
 					}
-					input.close();
 					
 					System.out.println("end server:send-data");
 				}
@@ -275,33 +283,37 @@ public class Server{
 					System.arraycopy(data, 4 + len + 8 + 4, d, 0, Length);
 					
 					//write file-data
-					RandomAccessFile fh = new RandomAccessFile(new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name), "rw");
-				    fh.seek(Offset);
-				    fh.read(new byte[Length]);
-				    fh.seek(Offset);
-				    fh.write(d);
-				    fh.close();
-					
-					if (isEnd){
-						if (MappingFiles.getMap().containsKey(name)){
-							DownloadingFileInfo dfi = MappingFiles.getMap().get(name);
-							dfi.Complete(Offset, Length);
-							if (dfi.Offset < dfi.FileLength){
-								int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
-								Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
-								dfi.Offset += lengthForSending;
-								System.out.println("send seed-info, keep seeding another data...");
-							}else{
-								SentData miss = dfi.getARangeLoss();
-								if (miss == null){
-									new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name).renameTo(new File(Constants.FOLDER_SEED + name));
-									MappingFiles.getMap().remove(name);
-									//MessageBox.Show(name + " is downloaded!", "Notify");
-									System.out.println("Download complete!");
-								}else{
-									int lengthForSending = (int) Math.min(miss.Length - miss.Offset, dfi.MaxLengthForSending);
-									Client.sendSeedInfo(from, name, miss.Offset, lengthForSending);
-									System.out.println("Download missed data!");
+					if (MappingFiles.getMap().containsKey(name)){
+						DownloadingFileInfo dfi = MappingFiles.getMap().get(name);
+						synchronized (dfi.writeLocker){
+							if (MappingFiles.getMap().containsKey(name)){
+								RandomAccessFile fh = new RandomAccessFile(new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name), "rw");
+							    fh.seek(Offset);
+							    fh.read(new byte[Length]);
+							    fh.seek(Offset);
+							    fh.write(d);
+							    fh.close();
+							    
+							    dfi.Complete(Offset, Length);
+								if (isEnd){
+									if (dfi.Offset < dfi.FileLength){
+										int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
+										Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
+										dfi.Offset += lengthForSending;
+										System.out.println("send seed-info, keep seeding another data...");
+									}else{
+										SentData miss = dfi.getARangeLoss();
+										if (miss == null){
+											new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name).renameTo(new File(Constants.FOLDER_SEED + name));
+											MappingFiles.getMap().remove(name);
+											//MessageBox.Show(name + " is downloaded!", "Notify");
+											System.out.println("Download complete!");
+										}else{
+											int lengthForSending = (int) Math.min(miss.Length, dfi.MaxLengthForSending);
+											Client.sendSeedInfo(from, name, miss.Offset, lengthForSending);
+											System.out.println("Download missed data!");
+										}
+									}
 								}
 							}
 						}
@@ -310,7 +322,7 @@ public class Server{
 					System.out.println("end receive-data");
 				}
 				catch (Exception e){
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		});

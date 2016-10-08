@@ -39,11 +39,15 @@ public final class Misc {
 		f.deleteOnExit();
 		//create file
 		FileOutputStream s = new FileOutputStream(f);
-		while (len > 0){
-			int k = (int) Math.min(2000000000, len);
+		int k = (int) Math.min(1000000, len);
+		if (k == 1000000){
 			byte[] buf = new byte[k];
-			s.write(buf);
-			len -= k;
+			while (len >= 1000000){
+				s.write(buf);
+				len -= k;
+			}
+			if (len > 0)
+				s.write(new byte[(int) len]);
 		}
 		s.flush();
 		s.close();
