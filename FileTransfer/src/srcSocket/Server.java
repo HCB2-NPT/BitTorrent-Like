@@ -234,7 +234,7 @@ public class Server{
 							input.close();
 						}
 						
-						if (sendLen + off >= Length){
+						if (sendLen + off >= stop){
 							Client.sendData(from, name, off, sendLen, sendData, true);
 							break;
 						}
@@ -242,6 +242,8 @@ public class Server{
 							Client.sendData(from, name, off, sendLen, sendData, false);
 							off += sendLen;
 						}
+						
+						Thread.sleep(Constants.SENDING_DELAY);
 					}
 					
 					System.out.println("end server:send-data");

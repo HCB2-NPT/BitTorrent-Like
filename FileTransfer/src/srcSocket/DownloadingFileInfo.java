@@ -14,15 +14,15 @@ public class DownloadingFileInfo {
 	public int 	MaxLengthForSending = 0;
 	public ArrayList<SentData> ListSentData = new ArrayList<SentData>();
 	
-	public void init(){
+	public DownloadingFileInfo(){
+		init();
+	}
+	
+	private void init(){
 		SentData start = new SentData();
-		SentData end = new SentData();
 		start.Offset = 0;
 		start.Length = 0;
-		end.Offset = FileLength;
-		end.Length = 0;
 		ListSentData.add(start);
-		ListSentData.add(end);
 	}
 	
 	private Comparator<SentData> comparator = new Comparator<SentData>() {
@@ -43,39 +43,41 @@ public class DownloadingFileInfo {
 	}
 	
 	private void merge(){
-		if (ListSentData.size() > 1){
-			SentData a = null, b = null;
-			boolean k;
-			while(true){
-				k = false;
-				for (int i = 1; i < ListSentData.size(); i++) {
-					a = ListSentData.get(i - 1);
-					b = ListSentData.get(i);
-					if (b.Offset <= a.Offset + a.Length && b.Offset >= a.Offset){
-						k = true;
-						break;
-					}
-				}
-				if (k){
-					if (a != null && b != null){
-						ListSentData.remove(b);
-						a.Length = (int) (b.Offset - a.Offset + b.Length);
-					}
-				}else{
+		SentData a = null, b = null;
+		boolean k;
+		while(ListSentData.size() > 1){
+			k = false;
+			for (int i = 1; i < ListSentData.size(); i++) {
+				a = ListSentData.get(i - 1);
+				b = ListSentData.get(i);
+				if (b.Offset <= a.Offset + a.Length && b.Offset >= a.Offset){
+					k = true;
 					break;
 				}
+			}
+			if (k){
+				if (a != null && b != null){
+					ListSentData.remove(b);
+					if (b.Offset + b.Length > a.Offset + a.Length)
+						a.Length = (int) (b.Offset - a.Offset + b.Length);
+				}
+			}else{
+				break;
 			}
 		}
 	}
 	
 	public SentData getARangeLoss(){
-		if (ListSentData.size() <= 1)
-			return null;
-		SentData newI = new SentData();
-		SentData a = ListSentData.get(0);
-		SentData b = ListSentData.get(1);
-		newI.Offset = a.Offset + a.Length;
-		newI.Length = (int) Math.min(b.Offset - newI.Offset, MaxLengthForSending);
-		return newI;
+		if (ListSentData.size() >= 1){
+			SentData a = ListSentData.get(0);
+			if (a.Offset == 0 && a.Length == FileLength)
+				return null;
+			SentData newI = new SentData();
+			SentData b = ListSentData.get(1);
+			newI.Offset = a.Offset + a.Length;
+			newI.Length = (int) Math.min(b.Offset - newI.Offset, MaxLengthForSending);
+			return newI;
+		}
+		return new SentData();
 	}
 }

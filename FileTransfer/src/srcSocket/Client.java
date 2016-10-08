@@ -103,7 +103,7 @@ public final class Client{
     	t.start();
     }
     
-    public static void sendSeedInfo(String host, String filename, long offset, int len){
+    public static void sendSeedInfo(String host, String filename, long off, int len){
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -115,7 +115,7 @@ public final class Client{
 					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
 		    		byte[] fileName = filename.getBytes(StandardCharsets.UTF_8);
 		    		byte[] fileNameLen = Misc.Int2Bytes(fileName.length);
-		    		byte[] seedOffset = Misc.Long2Bytes(offset);
+		    		byte[] seedOffset = Misc.Long2Bytes(off);
 		    		byte[] seedLen = Misc.Int2Bytes(len);
 		    		byte[] sendData = new byte[skGlobals.dataType_Size + myIpLen.length + myIp.length + fileNameLen.length + fileName.length + seedOffset.length + seedLen.length];
 		    		int offset = 0;
@@ -153,7 +153,7 @@ public final class Client{
     	t.start();
     }
     
-    public static void sendData(String host, String filename, long offset, int len, byte[] data, boolean isEnd){
+    public static void sendData(String host, String filename, long off, int len, byte[] data, boolean isEnd){
     	Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -165,7 +165,7 @@ public final class Client{
 					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
 		    		byte[] fileName = filename.getBytes(StandardCharsets.UTF_8);
 		    		byte[] fileNameLen = Misc.Int2Bytes(fileName.length);
-		    		byte[] seedOffset = Misc.Long2Bytes(offset);
+		    		byte[] seedOffset = Misc.Long2Bytes(off);
 		    		byte[] seedLen = Misc.Int2Bytes(len);
 		    		byte[] sendData = new byte[skGlobals.dataType_Size + myIpLen.length + myIp.length + fileNameLen.length + fileName.length + seedOffset.length + seedLen.length + data.length];
 		    		int offset = 0;
