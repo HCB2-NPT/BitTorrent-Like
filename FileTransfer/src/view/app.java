@@ -135,7 +135,7 @@ public class app {
 			                	for (String row : seedingFile.getItems()) {
 			                		index++;
 									if (row.indexOf(Constants.PREFIX_EMPTY_FILE + dfi.Name) > -1){
-										seedingFile.getItems().set(index, String.format("%2$8s | %1$s", Constants.PREFIX_EMPTY_FILE + dfi.Name, String.format("%.1f", ((float)dfi.LengthDownloaded() / (float)dfi.FileLength) * 100f)) + "%");
+										seedingFile.getItems().set(index, String.format("%2$8s | %1$s", Constants.PREFIX_EMPTY_FILE + dfi.Name, String.format("%.1f", ((float)dfi.LengthDownloaded() / (float)dfi.FileLength) * 100f) + "%"));
 										break;
 									}
 								}
