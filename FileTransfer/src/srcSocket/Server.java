@@ -34,14 +34,8 @@ public class Server{
         catch( Exception ex )
         {
             Debugger.log("Problem creating socket on port: " + Constants.PORT);
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                	MessageBox.Show("Problem creating socket on port: " + Constants.PORT, "Shutdown...");
-                	Platform.exit();
-					System.exit(0);
-                }
-            });
+            if (event != null)
+            	event.ListenFail();
             return false;
         }
     	

@@ -82,9 +82,9 @@ public class app {
 		        if (Files.isRegularFile(filePath)) {
 		        	String name = filePath.getFileName().toString();
 		        	if (name.indexOf(Constants.PREFIX_EMPTY_FILE) == 0)
-		        		seedingFile.getItems().add(String.format("%1$s%2$48s", name, "0%"));
+		        		seedingFile.getItems().add(String.format("%2$8s | %1$s", name, "ERROR!"));
 		        	else
-		        		seedingFile.getItems().add(String.format("%1$s%2$48s", name, "Seeding..."));
+		        		seedingFile.getItems().add(String.format("%2$8s | %1$s", name, "SEEDING"));
 		        }
 		    });
 		} catch (IOException e) {
@@ -105,6 +105,18 @@ public class app {
 			public void run() {
 				Main.server = new Server(new IServerEvent() {
 					@Override
+					public void ListenFail() {
+						Platform.runLater(new Runnable() {
+			                @Override
+			                public void run() {
+			                	MessageBox.Show("Problem creating socket on port: " + Constants.PORT, "Shutdown...");
+			                	Platform.exit();
+								System.exit(0);
+			                }
+			            });
+					}
+					
+					@Override
 					public void ReceiveResponse() {
 						Platform.runLater(new Runnable() {
 			                @Override
@@ -121,11 +133,12 @@ public class app {
 			                public void run() {
 			                	int index = -1;
 			                	for (String row : seedingFile.getItems()) {
-									if ((index = row.indexOf(Constants.PREFIX_EMPTY_FILE + dfi.Name)) > -1){
+			                		index++;
+									if (row.indexOf(Constants.PREFIX_EMPTY_FILE + dfi.Name) > -1){
+										seedingFile.getItems().set(index, String.format("%2$8s | %1$s", Constants.PREFIX_EMPTY_FILE + dfi.Name, String.format("%.1f", ((float)dfi.LengthDownloaded() / (float)dfi.FileLength) * 100f)) + "%");
 										break;
 									}
 								}
-			                	seedingFile.getItems().set(index, String.valueOf((dfi.LengthDownloaded() / dfi.FileLength) * 100d));
 			                }
 			            });
 					}
