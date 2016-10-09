@@ -5,6 +5,7 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 import config.Constants;
+import helper.Debugger;
 
 public final class Client{
     public static void sendRequest(String filename){
@@ -13,7 +14,7 @@ public final class Client{
 			public void run() {
 				try
 		        {
-					System.out.println("start request");
+					Debugger.log("start request");
 		    		//prepare data
 					byte[] myIp = Constants.MY_ADDRESS;
 					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
@@ -33,7 +34,7 @@ public final class Client{
 		    		
 		        	//get host
 		            InetAddress host = InetAddress.getByName(Constants.HOST);
-		            System.out.println(Inet4Address.getLocalHost().getHostAddress());
+		            Debugger.log(Inet4Address.getLocalHost().getHostAddress());
 		            
 		            //create socket and dgram
 		            DatagramSocket socket = new DatagramSocket();
@@ -44,7 +45,7 @@ public final class Client{
 		            
 		            //close
 		            socket.close();
-		            System.out.println("end request");
+		            Debugger.log("end request");
 		        }
 		        catch(Exception e)
 		        {
@@ -61,7 +62,7 @@ public final class Client{
 			public void run() {
 				try
 		        {
-					System.out.println("start send-response");
+					Debugger.log("start send-response");
 		    		//prepare data
 					byte[] myIp = Constants.MY_ADDRESS;
 					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
@@ -92,7 +93,7 @@ public final class Client{
 		            
 		            //close
 		            socket.close();
-		            System.out.println("end send-response");
+		            Debugger.log("end send-response");
 		        }
 		        catch(Exception e)
 		        {
@@ -109,7 +110,7 @@ public final class Client{
 			public void run() {
 				try
 		        {
-					System.out.println("start send-info");
+					Debugger.log("start send-info");
 		    		//prepare data
 					byte[] myIp = Constants.MY_ADDRESS;
 					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
@@ -142,7 +143,7 @@ public final class Client{
 		            
 		            //close
 		            socket.close();
-		            System.out.println("end send-info");
+		            Debugger.log("end send-info");
 		        }
 		        catch(Exception e)
 		        {
@@ -159,7 +160,7 @@ public final class Client{
 			public void run() {
 				try
 		        {
-					System.out.println("start client:send-data");
+					Debugger.log("start client:send-data");
 		    		//prepare data
 					byte[] myIp = Constants.MY_ADDRESS;
 					byte[] myIpLen = Misc.Int2Bytes(myIp.length);
@@ -197,7 +198,7 @@ public final class Client{
 		            
 		            //close
 		            socket.close();
-		            System.out.println("end client:send-data");
+		            Debugger.log("end client:send-data");
 		        }
 		        catch(Exception e)
 		        {

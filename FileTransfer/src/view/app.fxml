@@ -15,11 +15,11 @@
             <JFXTextField fx:id="requestField" promptText="Request file..." BorderPane.alignment="CENTER" />
          </center>
          <right>
-            <JFXButton fx:id="btnSend" onAction="#sender_Enter" text="Request" BorderPane.alignment="CENTER" />
+            <JFXButton fx:id="btnRequest" onAction="#request" text="Request" BorderPane.alignment="CENTER" />
          </right>
       </BorderPane>
    </top>
    <bottom>
-      <JFXButton fx:id="btnSeed" alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" onAction="#seed_Enter" text="Reload folder seeding file..." BorderPane.alignment="CENTER" />
+      <JFXButton fx:id="btnLoad" alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" onAction="#load" text="Reload folder seeding file..." BorderPane.alignment="CENTER" />
    </bottom>
 </BorderPane>

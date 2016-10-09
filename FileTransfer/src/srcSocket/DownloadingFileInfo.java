@@ -80,4 +80,12 @@ public class DownloadingFileInfo {
 		}
 		return new SentData();
 	}
+	
+	public long LengthDownloaded(){
+		long sum = 0;
+		for (SentData sentData : ListSentData) {
+			sum += sentData.Length;
+		}
+		return sum;
+	}
 }
