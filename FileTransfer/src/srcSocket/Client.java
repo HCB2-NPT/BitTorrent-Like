@@ -170,9 +170,9 @@ public final class Client{
     }
     
     public static void sendData(String host, String filename, long off, int len, byte[] data, boolean isEnd){
-    	Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
+    	//Thread t = new Thread(new Runnable() {
+		//	@Override
+		//	public void run() {
 				try
 		        {
 					Debugger.log("start client:send-data");
@@ -219,8 +219,8 @@ public final class Client{
 		        {
 		            //e.printStackTrace();
 		        }
-			}
-		});
-    	t.start();
+		//	}
+		//});
+    	//t.start();
     }
 }

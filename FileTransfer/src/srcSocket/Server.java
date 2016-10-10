@@ -307,34 +307,34 @@ public class Server{
 							    fh.seek(Offset);
 							    fh.write(d);
 							    fh.close();
-							    
-							    dfi.Complete(Offset, Length);
-							    if (event != null)
-									event.ReceiveData(dfi);
-							    if (Debugger.IsEnable){
-								    for (SentData s : dfi.ListSentData) {
-										Debugger.log(s.Offset + " - " + s.Length);
-									}
-							    }
-								if (isEnd){
-									if (dfi.Offset < dfi.FileLength){
-										int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
-										Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
-										dfi.Offset += lengthForSending;
-										Debugger.log("send seed-info, keep seeding another data...");
+							}
+						    
+						    dfi.Complete(Offset, Length);
+						    if (event != null)
+								event.ReceiveData(dfi);
+						    if (Debugger.IsEnable){
+							    for (SentData s : dfi.ListSentData) {
+									Debugger.log(s.Offset + " - " + s.Length);
+								}
+						    }
+							if (isEnd){
+								if (dfi.Offset < dfi.FileLength){
+									int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
+									Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
+									dfi.Offset += lengthForSending;
+									Debugger.log("send seed-info, keep seeding another data...");
+								}else{
+									SentData miss = dfi.getARangeLoss();
+									if (miss == null){
+										new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name).renameTo(new File(Constants.FOLDER_SEED + name));
+										MappingFiles.getMap().remove(name);
+										Debugger.log("Download complete!");
+										if (event != null)
+											event.DownloadCompleted(dfi);
 									}else{
-										SentData miss = dfi.getARangeLoss();
-										if (miss == null){
-											new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name).renameTo(new File(Constants.FOLDER_SEED + name));
-											MappingFiles.getMap().remove(name);
-											Debugger.log("Download complete!");
-											if (event != null)
-												event.DownloadCompleted(dfi);
-										}else{
-											int lengthForSending = (int) Math.min(miss.Length, dfi.MaxLengthForSending);
-											Client.sendSeedInfo(from, name, miss.Offset, lengthForSending);
-											Debugger.log("Download missed data!");
-										}
+										int lengthForSending = (int) Math.min(miss.Length, dfi.MaxLengthForSending);
+										Client.sendSeedInfo(from, name, miss.Offset, lengthForSending);
+										Debugger.log("Download missed data!");
 									}
 								}
 							}
