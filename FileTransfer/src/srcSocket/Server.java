@@ -177,16 +177,17 @@ public class Server{
 							event.ReceiveResponse();
 					}
 					
-					if (!dfi.Seeders.contains(from))
+					if (!dfi.Seeders.contains(from)){
 						dfi.Seeders.add(from);
-					
-					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.Seeders.size() * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
-					
-					synchronized (dfi.readLocker){
-						int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
-						if (lengthForSending > 0){
-							Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
-							dfi.Offset += lengthForSending;
+						
+						dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.Seeders.size() * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
+						
+						synchronized (dfi.readLocker){
+							int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
+							if (lengthForSending > 0){
+								Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
+								dfi.Offset += lengthForSending;
+							}
 						}
 					}
 					
