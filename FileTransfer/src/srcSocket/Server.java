@@ -181,11 +181,15 @@ public class Server{
 							event.ReceiveResponse();
 					}
 					
-					synchronized (dfi.readLocker){
-						dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
-						int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
-						Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
-						dfi.Offset += lengthForSending;
+					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
+					for (int i = 0; i < Constants.SENDINFO_TIMES; i++) {
+						synchronized (dfi.readLocker){
+							int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
+							if (lengthForSending > 0)
+								Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
+							dfi.Offset += lengthForSending;
+						}
+						Thread.sleep(Constants.SENDINFO_DELAY_PERTIMES);
 					}
 					
 					Debugger.log("end receive-response");
