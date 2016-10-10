@@ -10,9 +10,9 @@ public final class Constants {
 	public final static int 	PORT 						= 12345;
 	public final static int 	DATA_BUFFER_MAXSIZE 		= 50000;
 	public final static int 	LISTEN_BUFFER_MAXSIZE 		= DATA_BUFFER_MAXSIZE + 1024;
-	public final static int		SENDING_TIMES				= 3;
-	public final static int		SENDING_DELAY_PERTIMES		= 100;
-	public final static int 	SENDER_DELAY				= (DATA_BUFFER_MAXSIZE / 4096) * 2;
+	public final static int		SENDING_TIMES				= 2;
+	public final static int		SENDING_DELAY_PERTIMES		= 3000;
+	public final static int 	SENDER_DELAY				= ((DATA_BUFFER_MAXSIZE / 4096) + 1) * 8;
 	public final static String 	FOLDER_SEED 				= Paths.get(System.getProperty("user.dir")) + "\\seeding files\\";
 	public final static String 	PREFIX_EMPTY_FILE			= "DOWNLOADING-";
 	
