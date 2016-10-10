@@ -5,8 +5,6 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import config.Constants;
 import helper.Debugger;
-import helper.MessageBox;
-import javafx.application.Platform;
 
 public class Server{
 	private DatagramSocket socket;
@@ -167,13 +165,11 @@ public class Server{
 					DownloadingFileInfo dfi;
 					if (MappingFiles.getMap().containsKey(name)){
 						dfi = MappingFiles.getMap().get(name);
-						dfi.NSeeders++;
 					}else{
 						dfi = new DownloadingFileInfo();
 						MappingFiles.getMap().put(name, dfi);
 						dfi.Name = name;
 						dfi.FileLength = fLen;
-						dfi.NSeeders++;
 						
 						//create empty file
 						Misc.createTempFile(name, fLen);
@@ -181,15 +177,17 @@ public class Server{
 							event.ReceiveResponse();
 					}
 					
-					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.NSeeders * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
-					for (int i = 0; i < Constants.SENDINFO_TIMES; i++) {
-						synchronized (dfi.readLocker){
-							int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
-							if (lengthForSending > 0)
-								Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
+					if (!dfi.Seeders.contains(from))
+						dfi.Seeders.add(from);
+					
+					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.Seeders.size() * 4), 100000000), Constants.DATA_BUFFER_MAXSIZE);
+					
+					synchronized (dfi.readLocker){
+						int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
+						if (lengthForSending > 0){
+							Client.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
 							dfi.Offset += lengthForSending;
 						}
-						Thread.sleep(Constants.SENDINFO_DELAY_PERTIMES);
 					}
 					
 					Debugger.log("end receive-response");
@@ -257,7 +255,7 @@ public class Server{
 							off += sendLen;
 						}
 						
-						Thread.sleep(Constants.SENDING_DELAY);
+						Thread.sleep(Constants.SENDER_DELAY);
 					}
 					
 					Debugger.log("end server:send-data");
@@ -302,7 +300,7 @@ public class Server{
 					if (MappingFiles.getMap().containsKey(name)){
 						DownloadingFileInfo dfi = MappingFiles.getMap().get(name);
 						synchronized (dfi.writeLocker){
-							if (MappingFiles.getMap().containsKey(name)){
+							if (!dfi.IsReceived(Offset, Length)){
 								RandomAccessFile fh = new RandomAccessFile(new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + name), "rw");
 							    fh.seek(Offset);
 							    fh.read(new byte[Length]);

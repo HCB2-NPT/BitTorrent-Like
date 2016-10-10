@@ -10,8 +10,8 @@ public class DownloadingFileInfo {
 	public String Name = null;
 	public long Offset = 0;
 	public long FileLength = 0;
-	public int  NSeeders = 0;
 	public int 	MaxLengthForSending = 0;
+	public ArrayList<String> Seeders = new ArrayList<String>();
 	public ArrayList<SentData> ListSentData = new ArrayList<SentData>();
 	
 	public DownloadingFileInfo(){
@@ -87,5 +87,14 @@ public class DownloadingFileInfo {
 			sum += sentData.Length;
 		}
 		return sum;
+	}
+	
+	public boolean IsReceived(long off, int len){
+		for (SentData sentData : ListSentData) {
+			if (off >= sentData.Offset && off < sentData.Offset + sentData.Length
+					&& off + len <= sentData.Offset + sentData.Length)
+				return true;
+		}
+		return false;
 	}
 }
