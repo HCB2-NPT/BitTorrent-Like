@@ -2,40 +2,56 @@ package view;
 
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
-
-import application.Main;
-import config.Constants;
+import config.AppConfig;
 import helper.Debugger;
 import helper.MessageBox;
-
+import helper.Window;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ResourceBundle;
+import java.util.List;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import srcSocket.*;
 
-public class app {
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
-
+public class app extends Window {
+	private Listener listener = null;
+	
+	public app(){
+		super("../view/app.fxml", "application.css");
+	}
+	
+	@Override
+	protected void onCreate() {
+		Stage s = getStage();
+		s.setWidth(600);
+		s.setHeight(400);
+		s.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {
+				if (listener != null)
+					listener.stop();
+				Platform.exit();
+				System.exit(0);
+			}
+		});
+	}
+	
     @FXML
     private JFXTextField requestField;
 
     @FXML
-    private JFXListView<String> seedingFile;
+    private JFXListView<SeedFile> seedingFile;
 
     @FXML
     private Button btnRequest;
@@ -44,52 +60,41 @@ public class app {
     private Button btnLoad;
 
     @FXML
-    void request(ActionEvent event) {
-    	if (Main.server != null && Main.server.isActive()){
-	    	String fileName = requestField.getText();
-	    	if (!MappingFiles.getMap().containsKey(fileName)){
-		    	File f = new File(Constants.FOLDER_SEED + fileName);
-		    	if (!f.exists()){
-			    	Thread c = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							Client.sendRequest(f.getName());
-						}
-					});
-			        c.start();
-		    	}
-		    	else{
-		    		Debugger.log("File exists!");
-		    		MessageBox.Show("File exists!", "Notifying");
-		    	}
-		    }
-	    	else{
-	    		Debugger.log("File being downloaded!");
-	    		MessageBox.Show("File being downloaded!", "Notifying");
+    void request() {
+    	String fileName = requestField.getText();
+    	if (!MappingFiles.getMap().containsKey(fileName)){
+	    	File f = new File(AppConfig.FOLDER_SEED + fileName);
+	    	if (!f.exists()){
+		    	Thread c = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						Sender.sendRequest(f.getName());
+					}
+				});
+		        c.start();
 	    	}
-    	}
+	    	else{
+	    		Debugger.log("File not exists!");
+	    		MessageBox.Show("File not exists!", "Notifying");
+	    	}
+	    }
     	else{
-    		Debugger.log("Server is not opened!");
-    		MessageBox.Show("Server is not opened!", "Notifying");
+    		Debugger.log("File being downloaded!");
+    		MessageBox.Show("File being downloaded!", "Notifying");
     	}
     }
     
     @FXML
-    void load(ActionEvent event) {
-    	seedingFile.getItems().clear();
-    	try(Stream<Path> paths = Files.walk(Paths.get(Constants.FOLDER_SEED))) {
-		    paths.forEach(filePath -> {
-		        if (Files.isRegularFile(filePath)) {
-		        	String name = filePath.getFileName().toString();
-		        	if (name.indexOf(Constants.PREFIX_EMPTY_FILE) == 0)
-		        		seedingFile.getItems().add(String.format("%2$8s | %1$s", name, "ERROR!"));
-		        	else
-		        		seedingFile.getItems().add(String.format("%2$8s | %1$s", name, "SEEDING"));
-		        }
-		    });
-		} catch (IOException e) {
-			//e.printStackTrace();
-		}
+    void load() {
+    	FileChooser fileChooser = new FileChooser();
+    	fileChooser.setTitle("Select File");
+    	fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
+    	List<File> selectedFiles = fileChooser.showOpenMultipleDialog(getStage());
+    	if (selectedFiles == null)
+    		return;
+    	for (File selectedFile : selectedFiles) {
+    		seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
+    	}
     }
 
     @FXML
@@ -100,30 +105,20 @@ public class app {
         assert seedingFile != null : "fx:id=\"seedingFile\" was not injected: check your FXML file 'app.fxml'.";
         
         //start server to listen
-        Thread s = new Thread(new Runnable() {
+        new Thread(new Runnable() {
 			@Override
 			public void run() {
-				Main.server = new Server(new IServerEvent() {
+				listener = new Listener(new IListenerEvent() {
 					@Override
 					public void ListenFail() {
 						Platform.runLater(new Runnable() {
-			                @Override
-			                public void run() {
-			                	MessageBox.Show("Problem creating socket on port: " + Constants.PORT, "Shutdown...");
-			                	Platform.exit();
+							@Override
+							public void run() {
+								MessageBox.Show("Problem creating socket on port: " + AppConfig.PORT, "Shutdown...");
+				            	Platform.exit();
 								System.exit(0);
-			                }
-			            });
-					}
-					
-					@Override
-					public void ReceiveResponse() {
-						Platform.runLater(new Runnable() {
-			                @Override
-			                public void run() {
-			                	load(null);
-			                }
-			            });
+							}
+						});
 					}
 					
 					@Override
@@ -131,14 +126,7 @@ public class app {
 						Platform.runLater(new Runnable() {
 			                @Override
 			                public void run() {
-			                	int index = -1;
-			                	for (String row : seedingFile.getItems()) {
-			                		index++;
-									if (row.indexOf(Constants.PREFIX_EMPTY_FILE + dfi.Name) > -1){
-										seedingFile.getItems().set(index, String.format("%2$8s | %1$s", Constants.PREFIX_EMPTY_FILE + dfi.Name, String.format("%.1f", ((float)dfi.LengthDownloaded() / (float)dfi.FileLength) * 100f) + "%"));
-										break;
-									}
-								}
+			                	seedingFile.refresh();
 			                }
 			            });
 					}
@@ -148,22 +136,38 @@ public class app {
 						Platform.runLater(new Runnable() {
 			                @Override
 			                public void run() {
-			                	MessageBox.Show(dfi.Name + " is downloaded!", "Notify");
-			                	load(null);
+			                	//MessageBox.Show(dfi.Name + " is downloaded!", "Notify");
+			                	seedingFile.refresh();
 			                }
 			            });
 					}
 				});
-				if (!Main.server.listen())
-					Main.server = null;
+				listener.setSeedFiles(seedingFile.getItems());
+				listener.listen();
 			}
-		});
-        s.start();
-        
-        //load
-        load(null);
+		}).start();
         
         //create folder "seeding files"
-        new File(Constants.FOLDER_SEED).mkdir();
+        new File(AppConfig.FOLDER_SEED).mkdir();
+        
+        //load
+        loadSeedingFile();
+        
+        Sender.AutoRepair();
+    }
+    
+    void loadSeedingFile(){
+    	File folder = new File(AppConfig.FOLDER_SEED);
+    	File[] listOfFiles = folder.listFiles();
+    	String name;
+    	for (File file : listOfFiles) {
+    		if (file.isFile() && !file.isHidden()) {
+    			name = file.getName();
+	        	if (name.indexOf(AppConfig.PREFIX_EMPTY_FILE) == 0)
+	        		seedingFile.getItems().add(new SeedFile(name, file.getPath()));
+	        	else
+	        		seedingFile.getItems().add(new SeedFile(name, file.getPath()));
+	        }
+		}
     }
 }

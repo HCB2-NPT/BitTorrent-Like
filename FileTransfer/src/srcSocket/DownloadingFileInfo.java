@@ -12,22 +12,24 @@ public class DownloadingFileInfo {
 	public long FileLength = 0;
 	public int 	MaxLengthForSending = 0;
 	public ArrayList<String> Seeders = new ArrayList<String>();
-	public ArrayList<SentData> ListSentData = new ArrayList<SentData>();
+	public ArrayList<RangeDataSent> ListSentData = new ArrayList<RangeDataSent>();
+	
+	public long TimeStamp = System.currentTimeMillis();
 	
 	public DownloadingFileInfo(){
 		init();
 	}
 	
 	private void init(){
-		SentData start = new SentData();
+		RangeDataSent start = new RangeDataSent();
 		start.Offset = 0;
 		start.Length = 0;
 		ListSentData.add(start);
 	}
 	
-	private Comparator<SentData> comparator = new Comparator<SentData>() {
+	private Comparator<RangeDataSent> comparator = new Comparator<RangeDataSent>() {
 		@Override
-		public int compare(SentData a, SentData b) {
+		public int compare(RangeDataSent a, RangeDataSent b) {
 			if (a.Offset < b.Offset)
 				return -1;
 			if (a.Offset > b.Offset)
@@ -37,13 +39,13 @@ public class DownloadingFileInfo {
 	};
 	
 	public void Complete(long off, int len){
-		ListSentData.add(new SentData(off, len));
+		ListSentData.add(new RangeDataSent(off, len));
 		ListSentData.sort(comparator);
 		merge();
 	}
 	
 	private void merge(){
-		SentData a = null, b = null;
+		RangeDataSent a = null, b = null;
 		boolean k;
 		while(ListSentData.size() > 1){
 			k = false;
@@ -67,30 +69,30 @@ public class DownloadingFileInfo {
 		}
 	}
 	
-	public SentData getARangeLoss(){
+	public RangeDataSent getARangeLoss(){
 		if (ListSentData.size() >= 1){
-			SentData a = ListSentData.get(0);
+			RangeDataSent a = ListSentData.get(0);
 			if (a.Offset == 0 && a.Length == FileLength)
 				return null;
-			SentData newI = new SentData();
-			SentData b = ListSentData.get(1);
+			RangeDataSent newI = new RangeDataSent();
+			RangeDataSent b = ListSentData.get(1);
 			newI.Offset = a.Offset + a.Length;
 			newI.Length = (int) Math.min(b.Offset - newI.Offset, MaxLengthForSending);
 			return newI;
 		}
-		return new SentData();
+		return new RangeDataSent();
 	}
 	
 	public long LengthDownloaded(){
 		long sum = 0;
-		for (SentData sentData : ListSentData) {
+		for (RangeDataSent sentData : ListSentData) {
 			sum += sentData.Length;
 		}
 		return sum;
 	}
 	
 	public boolean IsReceived(long off, int len){
-		for (SentData sentData : ListSentData) {
+		for (RangeDataSent sentData : ListSentData) {
 			if (off >= sentData.Offset && off < sentData.Offset + sentData.Length
 					&& off + len <= sentData.Offset + sentData.Length)
 				return true;

@@ -1,8 +1,7 @@
 package srcSocket;
 
-public interface IServerEvent {
+public interface IListenerEvent {
 	public void ListenFail();
-	public void ReceiveResponse();
 	public void ReceiveData(DownloadingFileInfo dfi);
 	public void DownloadCompleted(DownloadingFileInfo dfi);
 }

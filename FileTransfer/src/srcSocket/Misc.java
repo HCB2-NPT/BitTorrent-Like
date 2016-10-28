@@ -2,7 +2,7 @@ package srcSocket;
 
 import java.io.*;
 
-import config.Constants;
+import config.AppConfig;
 
 public final class Misc {
 	public static byte[] Int2Bytes(int i)
@@ -33,8 +33,8 @@ public final class Misc {
 	  return result;
     }
 	
-	public static void createTempFile(String fileName, long len) throws IOException{
-		File f = new File(Constants.FOLDER_SEED + Constants.PREFIX_EMPTY_FILE + fileName);
+	public static File createTempFile(String fileName, long len) throws IOException{
+		File f = new File(AppConfig.FOLDER_SEED + AppConfig.PREFIX_EMPTY_FILE + fileName);
 		//delete file if exist
 		f.deleteOnExit();
 		//create file
@@ -49,5 +49,6 @@ public final class Misc {
 			s.write(new byte[(int) len]);
 		s.flush();
 		s.close();
+		return f;
 	}
 }

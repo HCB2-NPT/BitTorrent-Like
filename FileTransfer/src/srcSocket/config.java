@@ -1,6 +1,6 @@
 package srcSocket;
 
-public class skGlobals {
+public class config {
 	public final static int 	dataType_Size 				= 1;
 	public final static String 	dataType_Request 			= "0";
 	public final static String 	dataType_Response	 		= "a";

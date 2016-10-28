@@ -1,12 +1,12 @@
 package srcSocket;
 
-public class SentData {
+public class RangeDataSent {
 	public long Offset = 0;
 	public int Length = 0;
 	
-	public SentData() { super(); }
+	public RangeDataSent() { super(); }
 	
-	public SentData(long off, int len) {
+	public RangeDataSent(long off, int len) {
 		Offset = off;
 		Length = len;
 	}
