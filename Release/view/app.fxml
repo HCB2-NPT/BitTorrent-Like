@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <JFXListView fx:id="seedingFile" BorderPane.alignment="CENTER" />
+   </center>
+   <top>
+      <BorderPane BorderPane.alignment="CENTER">
+         <center>
+            <JFXTextField fx:id="requestField" promptText="Request file..." BorderPane.alignment="CENTER" />
+         </center>
+         <right>
+            <JFXButton fx:id="btnRequest" onAction="#request" text="Request" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
+   </top>
+   <bottom>
+      <JFXButton fx:id="btnLoad" alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#load" text="Share file..." BorderPane.alignment="CENTER" />
+   </bottom>
+</BorderPane>

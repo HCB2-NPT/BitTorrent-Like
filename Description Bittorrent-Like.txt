@@ -1,0 +1,74 @@
+Mô tả đồ án:
+	1/ Hướng hoạt động:
+		- Có 1 máy A gửi request lên broadcast cần file z và broadcast gửi về tất cả các máy request đó.
+		- Các máy B, C nhận request (trừ máy gửi request) sẽ kiểm tra xem trong máy mình có file z không.
+		- B gửi response về máy A.
+		- Máy A nhận response.
+		- Máy A chia FileLength (tổng số bytes của file request) nhận được từ response thành nhiều phần tùy theo số lượng seeders.
+		- Gửi B seed-info gồm:
+			+ Offset: vị trí cần đọc file.
+			+ Length: độ dài cần đọc.
+		- Máy B nhận seed-info và đọc file-data theo offset và length rùi gửi trả A.
+		- Giả sử máy C gửi response đến sau máy B sẽ nhận được seed-info kế tiếp của B.
+			VD: B nhận seed-info (Offset = 0, Length = 10) thì C tới sau sẽ nhận (Offset = 10, Length = 10 để đọc và gửi 10 bytes kế tiếp).
+		- Khi A nhận được file-data từ B và C gửi về sẽ tiếp đọc gửi seed-info kế tiếp như bước trên.
+		- Quá trình lặp lại đến khi gửi toàn bộ data qua cho A.
+		- Nếu gói tin file-data trả về A bị mất, không đến được A.
+			Cho phép mất nhưng sau khi nhận hết chiều dài FileLength, sẽ quay lại duyệt các phần bị mất và đề nghị gửi lại.
+			VD:	B gửi lại file-data đến và A kiểm tra thấy rằng đã duyệt hết FileLength.
+				A quay lại duyệt các khoản đã nhận (có lưu các khoản nhận (Offset, Length)).
+				Lấy ra các khoản thiếu chưa được nhận, đề nghị B gửi lại khoản đó.
+				C gửi lại file-data đến và A cũng làm tương tự vì đã duyệt hết FileLength.
+				Quá trình lặp lại đến khi vá hết các chỗ đã mất gói.
+		- B/C gửi file-data vá lỗi (mất gói) cho A và A duyệt các khoản nhận và thấy đã nhận đủ.
+		- A ngừng gửi seed-info cho bất kỳ máy nào.
+		- A nhận hoàn tất file đã request.
+		
+	2/ Ưu điểm:
+		- Nhận (request) và Gửi (Seed) đồng thời nhiều file.
+		- Tự động vá các gói tin bị mất.
+		- Có hỗ trợ bắt tay 3 bước: request - response - seed-info => send data
+		- Có hỗ trợ gửi 1 gói tin nhiều lần để tránh mất gói tin.
+		- Có hỗ trợ auto repair mỗi 5s, và auto reset mỗi 20s nếu file bị dừng quá lâu.
+		
+	3/ Khuyết điểm:
+		- File seed trong mạng không thể trùng tên khác data.
+			Lý do là vì không có cách đánh index để phân biệt file trùng tên nhưng khác data.
+			
+	4/ Các loại gói tin và cấu trúc:
+		- Request:
+			Type (1 byte)
+			Sender IP - Length (int)
+			Sender IP (string)
+			FileName - Length (int)
+			FileName (string)
+		- Response:
+			Type (1 byte)
+			Sender IP - Length (int)
+			Sender IP (string)
+			FileName - Length (int)
+			FileName (string)
+		- SeedInfo:
+			Type (1 byte)
+			Sender IP - Length (int)
+			Sender IP (string)
+			FileName - Length (int)
+			FileName (string)
+			Seed-Offset (long)
+			Seed-Length (int)
+		- Data:
+			Type (1 byte)
+			Sender IP - Length (int)
+			Sender IP (string)
+			FileName - Length (int)
+			FileName (string)
+			Seed-Offset (long)
+			Seed-Length (int)
+			Data (byte[])
+			
+			
+			
+			
+			
+			
+			
