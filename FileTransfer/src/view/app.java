@@ -50,13 +50,13 @@ public class app extends Window {
     void request() {
     	String fileName = requestField.getText();
     	if (!MappingFiles.getMap().containsKey(fileName)){
-//	    	if (listener.getSeedFileBy(fileName) == null && listener.getSeedFileBy(AppConfig.PREFIX_EMPTY_FILE + fileName) == null){
+	    	if (listener.getSeedFileBy(fileName) == null && listener.getSeedFileBy(AppConfig.PREFIX_EMPTY_FILE + fileName) == null){
 	    		Sender.sendRequest(fileName);
-//	    	}
-//	    	else{
-//	    		Debugger.log("File not exists!");
-//	    		MessageBox.Show("File not exists!", "Notifying");
-//	    	}
+	    	}
+	    	else{
+	    		Debugger.log("File not exists!");
+	    		MessageBox.Show("File not exists!", "Notifying");
+	    	}
 	    }
     	else{
     		Debugger.log("File being downloaded!");
@@ -72,10 +72,17 @@ public class app extends Window {
     	List<File> selectedFiles = fileChooser.showOpenMultipleDialog(getStage());
     	if (selectedFiles == null)
     		return;
+    	boolean k;
     	for (File selectedFile : selectedFiles) {
-//    		if (listener.getSeedFileBy(selectedFile.getName()) == null){
+    		k = true;
+    		for (SeedFile sf : seedingFile.getItems()) {
+				if (sf.getFileName().equals(selectedFile.getName()) || sf.getFileName().equals(AppConfig.PREFIX_EMPTY_FILE + selectedFile.getName())){
+					k = false;
+					break;
+				}
+			}
+    		if (k)
     			seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
-//    		}
     	}
     }
     
