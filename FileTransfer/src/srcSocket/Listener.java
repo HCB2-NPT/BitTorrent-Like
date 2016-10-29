@@ -67,6 +67,7 @@ public class Listener{
     	active = true;
         while (active)
         {
+        	System.out.println("A");
             try
             {
             	packet = new DatagramPacket(buffer, buffer.length);
