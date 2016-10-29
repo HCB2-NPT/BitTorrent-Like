@@ -80,7 +80,10 @@ public class app extends Window {
     	if (selectedFiles == null)
     		return;
     	for (File selectedFile : selectedFiles) {
-    		seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
+    		SeedFile sf = listener.getSeedFileBy(selectedFile.getName());
+    		if (sf == null){
+    			seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
+    		}
     	}
     }
     
@@ -88,7 +91,7 @@ public class app extends Window {
     void pauseplay() {
     	SeedFile sf = seedingFile.getSelectionModel().getSelectedItem();
     	if (sf != null){
-	    	DownloadingFileInfo dfi = MappingFiles.getMap().get(seedingFile.getSelectionModel().getSelectedItem().getFileName());
+	    	DownloadingFileInfo dfi = MappingFiles.getMap().get(seedingFile.getSelectionModel().getSelectedItem().getFileName().replace(AppConfig.PREFIX_EMPTY_FILE, ""));
 	    	if (dfi != null)
 	    		dfi.isRun = !dfi.isRun;
 	    	if (dfi.isRun){
@@ -103,7 +106,7 @@ public class app extends Window {
     void delete() {
     	SeedFile sf = seedingFile.getSelectionModel().getSelectedItem();
     	if (sf != null){
-	    	MappingFiles.getMap().remove(sf.getFileName());
+	    	MappingFiles.getMap().remove(sf.getFileName().replace(AppConfig.PREFIX_EMPTY_FILE, ""));
 	    	new File(sf.getFilePath()).deleteOnExit();
 	    	seedingFile.getItems().remove(sf);
     	}

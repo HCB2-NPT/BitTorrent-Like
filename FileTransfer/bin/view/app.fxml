@@ -30,7 +30,7 @@
             <JFXButton buttonType="RAISED" onAction="#request" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Request" GridPane.columnIndex="4" />
             <JFXButton buttonType="RAISED" onAction="#pauseplay" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Pause/Play" GridPane.columnIndex="3" GridPane.rowIndex="1" />
             <JFXButton buttonType="RAISED" onAction="#delete" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Delete" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-            <JFXButton buttonType="RAISED" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Create Seed" GridPane.rowIndex="1" />
+            <JFXButton buttonType="RAISED" disable="true" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Create Seed" GridPane.rowIndex="1" />
          </children>
       </GridPane>
    </top>
