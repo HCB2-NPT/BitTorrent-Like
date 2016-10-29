@@ -50,7 +50,7 @@ public class app extends Window {
     void request() {
     	String fileName = requestField.getText();
     	if (!MappingFiles.getMap().containsKey(fileName)){
-	    	if (listener.getSeedFileBy(fileName) == null && listener.getSeedFileBy(AppConfig.PREFIX_EMPTY_FILE + fileName) == null){
+	    	if (getSeedFileBy(fileName) == null && getSeedFileBy(AppConfig.PREFIX_EMPTY_FILE + fileName) == null){
 	    		Sender.sendRequest(fileName);
 	    	}
 	    	else{
@@ -72,16 +72,8 @@ public class app extends Window {
     	List<File> selectedFiles = fileChooser.showOpenMultipleDialog(getStage());
     	if (selectedFiles == null)
     		return;
-    	boolean k;
     	for (File selectedFile : selectedFiles) {
-    		k = true;
-    		for (SeedFile sf : seedingFile.getItems()) {
-				if (sf.getFileName().equals(selectedFile.getName()) || sf.getFileName().equals(AppConfig.PREFIX_EMPTY_FILE + selectedFile.getName())){
-					k = false;
-					break;
-				}
-			}
-    		if (k)
+    		if (getSeedFileBy(selectedFile.getName()) == null && getSeedFileBy(AppConfig.PREFIX_EMPTY_FILE + selectedFile.getName()) == null)
     			seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
     	}
     }
@@ -185,5 +177,14 @@ public class app extends Window {
 	        	}
 	        }
 		}
+    }
+    
+    SeedFile getSeedFileBy(String name){
+    	for (SeedFile seedFile : seedingFile.getItems()) {
+			if (seedFile.getFileName().equals(name)){
+				return seedFile;
+			}
+		}
+    	return null;
     }
 }
