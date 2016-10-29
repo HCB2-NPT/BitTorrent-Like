@@ -111,44 +111,44 @@ public class app extends Window {
         assert seedingFile != null : "fx:id=\"seedingFile\" was not injected: check your FXML file 'app.fxml'.";
         
         //start server to listen
-		listener = new Listener(new IListenerEvent() {
-			@Override
-			public void ListenFail() {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						MessageBox.Show("Problem creating socket on port: " + AppConfig.PORT, "Shutdown...");
-		            	Platform.exit();
-						System.exit(0);
-					}
-				});
-			}
-			
-			@Override
-			public void ReceiveData(DownloadingFileInfo dfi) {
-				Platform.runLater(new Runnable() {
-	                @Override
-	                public void run() {
-	                	seedingFile.refresh();
-	                }
-	            });
-			}
-			
-			@Override
-			public void DownloadCompleted(DownloadingFileInfo dfi) {
-				Platform.runLater(new Runnable() {
-	                @Override
-	                public void run() {
-	                	//MessageBox.Show(dfi.Name + " is downloaded!", "Notify");
-	                	seedingFile.refresh();
-	                }
-	            });
-			}
-		});
-		listener.setSeedFiles(seedingFile.getItems());
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+				listener = new Listener(new IListenerEvent() {
+					@Override
+					public void ListenFail() {
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								MessageBox.Show("Problem creating socket on port: " + AppConfig.PORT, "Shutdown...");
+				            	Platform.exit();
+								System.exit(0);
+							}
+						});
+					}
+					
+					@Override
+					public void ReceiveData(DownloadingFileInfo dfi) {
+						Platform.runLater(new Runnable() {
+			                @Override
+			                public void run() {
+			                	seedingFile.refresh();
+			                }
+			            });
+					}
+					
+					@Override
+					public void DownloadCompleted(DownloadingFileInfo dfi) {
+						Platform.runLater(new Runnable() {
+			                @Override
+			                public void run() {
+			                	//MessageBox.Show(dfi.Name + " is downloaded!", "Notify");
+			                	seedingFile.refresh();
+			                }
+			            });
+					}
+				});
+				listener.setSeedFiles(seedingFile.getItems());
 				listener.listen();
 			}
 		});
