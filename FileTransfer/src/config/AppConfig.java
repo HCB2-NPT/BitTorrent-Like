@@ -10,7 +10,7 @@ public final class AppConfig {
 	
 	public final static String 	HOST 						= "255.255.255.255"; //send to broadcast
 	public final static byte[] 	MY_ADDRESS					= getMyAddress().getBytes();
-	public final static int 	PORT 						= 12345;
+	public final static int 	PORT 						= 12346;
 	public final static int 	DATA_BUFFER_MAXSIZE 		= 20000;
 	public final static int 	LISTEN_BUFFER_MAXSIZE 		= 30000;
 	public final static int		REPAIR_DELAY				= 5000;

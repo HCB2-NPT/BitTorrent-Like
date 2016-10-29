@@ -73,10 +73,7 @@ public class app extends Window {
     	if (selectedFiles == null)
     		return;
     	for (File selectedFile : selectedFiles) {
-    		SeedFile sf = listener.getSeedFileBy(selectedFile.getName());
-    		if (sf == null){
-    			seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
-    		}
+			seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
     	}
     }
     
