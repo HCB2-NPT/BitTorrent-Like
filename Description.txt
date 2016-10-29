@@ -27,9 +27,8 @@ Mô tả đồ án:
 	2/ Ưu điểm:
 		- Nhận (request) và Gửi (Seed) đồng thời nhiều file.
 		- Tự động vá các gói tin bị mất.
-		- Có hỗ trợ bắt tay 3 bước: request - response - seed-info => send data
 		- Có hỗ trợ gửi 1 gói tin nhiều lần để tránh mất gói tin.
-		- Có hỗ trợ auto repair mỗi 5s, và auto reset mỗi 20s nếu file bị dừng quá lâu.
+		- Có hỗ trợ auto repair mỗi 10s nếu file bị dừng quá lâu.
 		
 	3/ Khuyết điểm:
 		- File seed trong mạng không thể trùng tên khác data.

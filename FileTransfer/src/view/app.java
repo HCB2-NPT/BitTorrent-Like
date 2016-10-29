@@ -7,17 +7,10 @@ import helper.Debugger;
 import helper.MessageBox;
 import helper.Window;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Stream;
-
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -52,12 +45,6 @@ public class app extends Window {
 
     @FXML
     private JFXListView<SeedFile> seedingFile;
-
-    @FXML
-    private Button btnRequest;
-    
-    @FXML
-    private Button btnLoad;
 
     @FXML
     void request() {
@@ -96,12 +83,35 @@ public class app extends Window {
     		seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
     	}
     }
+    
+    @FXML
+    void pauseplay() {
+    	SeedFile sf = seedingFile.getSelectionModel().getSelectedItem();
+    	if (sf != null){
+	    	DownloadingFileInfo dfi = MappingFiles.getMap().get(seedingFile.getSelectionModel().getSelectedItem().getFileName());
+	    	if (dfi != null)
+	    		dfi.isRun = !dfi.isRun;
+	    	if (dfi.isRun){
+	    		dfi.Seeders.clear();
+	    		Sender.sendRequest(sf.getFileName());
+	    		dfi.TimeStamp = System.currentTimeMillis();
+	    	}
+    	}
+    }
+
+    @FXML
+    void delete() {
+    	SeedFile sf = seedingFile.getSelectionModel().getSelectedItem();
+    	if (sf != null){
+	    	MappingFiles.getMap().remove(sf.getFileName());
+	    	new File(sf.getFilePath()).deleteOnExit();
+	    	seedingFile.getItems().remove(sf);
+    	}
+    }
 
     @FXML
     void initialize() {
     	assert requestField != null : "fx:id=\"filepath\" was not injected: check your FXML file 'app.fxml'.";
-    	assert btnRequest != null : "fx:id=\"btnSend\" was not injected: check your FXML file 'app.fxml'.";
-    	assert btnLoad != null : "fx:id=\"btnSeed\" was not injected: check your FXML file 'app.fxml'.";
         assert seedingFile != null : "fx:id=\"seedingFile\" was not injected: check your FXML file 'app.fxml'.";
         
         //start server to listen
@@ -163,10 +173,13 @@ public class app extends Window {
     	for (File file : listOfFiles) {
     		if (file.isFile() && !file.isHidden()) {
     			name = file.getName();
-	        	if (name.indexOf(AppConfig.PREFIX_EMPTY_FILE) == 0)
+	        	if (name.indexOf(AppConfig.PREFIX_EMPTY_FILE) == 0){
+	        		//seedingFile.getItems().add(new SeedFile(name, file.getPath()));
+	        		Sender.sendRequest(name.replace(AppConfig.PREFIX_EMPTY_FILE, ""));
+	        	}
+	        	else{
 	        		seedingFile.getItems().add(new SeedFile(name, file.getPath()));
-	        	else
-	        		seedingFile.getItems().add(new SeedFile(name, file.getPath()));
+	        	}
 	        }
 		}
     }

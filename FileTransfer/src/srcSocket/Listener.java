@@ -195,16 +195,24 @@ public class Listener{
 						seedFiles.add(new SeedFile(f.getName(), f.getPath()));
 					}
 					
+					dfi.TimeStamp = System.currentTimeMillis();
+					
 					if (!dfi.Seeders.contains(from))
 						dfi.Seeders.add(from);
 					
 					dfi.MaxLengthForSending = (int) Math.max(Math.min(dfi.FileLength / (dfi.Seeders.size() * 4), 100000000), AppConfig.DATA_BUFFER_MAXSIZE);
 					
 					synchronized (dfi.readLocker){
-						int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
-						if (lengthForSending > 0){
+						if (dfi.Offset < dfi.FileLength){
+							int lengthForSending = (int) Math.min(dfi.FileLength - dfi.Offset, dfi.MaxLengthForSending);
 							Sender.sendSeedInfo(from, name, dfi.Offset, lengthForSending);
 							dfi.Offset += lengthForSending;
+						}else{
+							RangeDataSent miss = dfi.getARangeLoss();
+							if (miss != null){
+								int lengthForSending = (int) Math.min(miss.Length, dfi.MaxLengthForSending);
+								Sender.sendSeedInfo(from, name, miss.Offset, lengthForSending);
+							}
 						}
 					}
 					
@@ -321,8 +329,8 @@ public class Listener{
 						System.arraycopy(data, 4 + len + 8 + 4, d, 0, Length);
 						
 						//write file-data
-						if (MappingFiles.getMap().containsKey(name)){
-							DownloadingFileInfo dfi = MappingFiles.getMap().get(name);
+						DownloadingFileInfo dfi = MappingFiles.getMap().get(name);
+						if (dfi != null && dfi.isRun){
 							dfi.TimeStamp = System.currentTimeMillis();
 							synchronized (dfi.writeLocker){
 								if (!dfi.IsReceived(Offset, Length)){

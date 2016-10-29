@@ -16,6 +16,8 @@ public class DownloadingFileInfo {
 	
 	public long TimeStamp = System.currentTimeMillis();
 	
+	public boolean isRun = true;
+	
 	public DownloadingFileInfo(){
 		init();
 	}
@@ -80,7 +82,7 @@ public class DownloadingFileInfo {
 			newI.Length = (int) Math.min(b.Offset - newI.Offset, MaxLengthForSending);
 			return newI;
 		}
-		return new RangeDataSent();
+		return null;
 	}
 	
 	public long LengthDownloaded(){

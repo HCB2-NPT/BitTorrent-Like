@@ -16,21 +16,14 @@ public final class Sender{
 			public void run() {
 				for (DownloadingFileInfo dfi : MappingFiles.getMap().values()) {
 					long cur = System.currentTimeMillis();
-					if (dfi.TimeStamp + 20001 < cur){
-						dfi.Offset = 0;
+					if (dfi.TimeStamp + AppConfig.REPAIR_DELAY < cur){
 						dfi.Seeders.clear();
-						dfi.ListSentData.clear();
 						sendRequest(dfi.Name);
 						dfi.TimeStamp = cur;
 					}
-					else if (dfi.TimeStamp + 5000 < cur){
-						for (String host : dfi.Seeders) {
-							sendSeedInfo(host, dfi.Name, 0, 1);
-						}
-					}
 				}
 			}
-		}, 2000, 2000);
+		}, 0, AppConfig.REPAIR_TIMER);
 	}
 	
     public static void sendRequest(String filename){
@@ -66,10 +59,7 @@ public final class Sender{
 		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, host, AppConfig.PORT);
 		            
 		            //send
-		            for (int i = 0; i < AppConfig.SENDING_TIMES; i++) {
-		            	socket.send(packet);	
-		            	Thread.sleep(AppConfig.SENDING_DELAY_PERTIMES);
-					}
+	            	socket.send(packet);
 		            
 		            //close
 		            socket.close();
@@ -115,10 +105,7 @@ public final class Sender{
 		            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(host), AppConfig.PORT);
 		            
 		            //send
-		            for (int i = 0; i < AppConfig.SENDING_TIMES; i++) {
-		            	socket.send(packet);	
-		            	Thread.sleep(AppConfig.SENDING_DELAY_PERTIMES);
-					}
+		            socket.send(packet);
 		            
 		            //close
 		            socket.close();
