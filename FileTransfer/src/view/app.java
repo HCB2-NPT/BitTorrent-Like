@@ -50,8 +50,7 @@ public class app extends Window {
     void request() {
     	String fileName = requestField.getText();
     	if (!MappingFiles.getMap().containsKey(fileName)){
-    		SeedFile sf = listener.getSeedFileBy(fileName);
-	    	if (sf == null){
+	    	if (listener.getSeedFileBy(fileName) == null && listener.getSeedFileBy(AppConfig.PREFIX_EMPTY_FILE + fileName) == null){
 	    		Sender.sendRequest(fileName);
 	    	}
 	    	else{
@@ -86,12 +85,13 @@ public class app extends Window {
     	SeedFile sf = seedingFile.getSelectionModel().getSelectedItem();
     	if (sf != null){
 	    	DownloadingFileInfo dfi = MappingFiles.getMap().get(seedingFile.getSelectionModel().getSelectedItem().getFileName().replace(AppConfig.PREFIX_EMPTY_FILE, ""));
-	    	if (dfi != null)
+	    	if (dfi != null){
 	    		dfi.isRun = !dfi.isRun;
-	    	if (dfi.isRun){
-	    		dfi.Seeders.clear();
-	    		Sender.sendRequest(sf.getFileName());
-	    		dfi.TimeStamp = System.currentTimeMillis();
+		    	if (dfi.isRun){
+		    		dfi.Seeders.clear();
+		    		Sender.sendRequest(sf.getFileName());
+		    		dfi.TimeStamp = System.currentTimeMillis();
+		    	}
 	    	}
     	}
     }
