@@ -23,16 +23,18 @@
          </columnConstraints>
          <rowConstraints>
             <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <JFXTextField fx:id="requestField" promptText="Request file..." />
-            <JFXButton buttonType="RAISED" onAction="#request" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Request" GridPane.columnIndex="1" />
-            <JFXButton buttonType="RAISED" onAction="#pauseplay" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Pause/Play" GridPane.columnIndex="3" />
-            <JFXButton buttonType="RAISED" onAction="#delete" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Delete" GridPane.columnIndex="4" />
+            <JFXTextField fx:id="requestField" promptText="Request file..." GridPane.columnSpan="4" />
+            <JFXButton buttonType="RAISED" onAction="#request" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Request" GridPane.columnIndex="4" />
+            <JFXButton buttonType="RAISED" onAction="#pauseplay" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Pause/Play" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <JFXButton buttonType="RAISED" onAction="#delete" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Delete" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <JFXButton buttonType="RAISED" prefWidth="80.0" style="-fx-background-color: #ffffff;" text="Create Seed" GridPane.rowIndex="1" />
          </children>
       </GridPane>
    </top>
    <bottom>
-      <JFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#load" text="Share file..." BorderPane.alignment="CENTER" />
+      <JFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#load" text="Add a seed..." BorderPane.alignment="CENTER" />
    </bottom>
 </BorderPane>
