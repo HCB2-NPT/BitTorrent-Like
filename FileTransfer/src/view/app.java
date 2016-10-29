@@ -82,12 +82,12 @@ public class app extends Window {
     void pauseplay() {
     	SeedFile sf = seedingFile.getSelectionModel().getSelectedItem();
     	if (sf != null){
-	    	DownloadingFileInfo dfi = MappingFiles.getMap().get(seedingFile.getSelectionModel().getSelectedItem().getFileName().replace(AppConfig.PREFIX_EMPTY_FILE, ""));
+	    	DownloadingFileInfo dfi = MappingFiles.getMap().get(sf.getFileName().replace(AppConfig.PREFIX_EMPTY_FILE, ""));
 	    	if (dfi != null){
 	    		dfi.isRun = !dfi.isRun;
 		    	if (dfi.isRun){
 		    		dfi.Seeders.clear();
-		    		Sender.sendRequest(sf.getFileName());
+		    		Sender.sendRequest(sf.getFileName().replace(AppConfig.PREFIX_EMPTY_FILE, ""));
 		    		dfi.TimeStamp = System.currentTimeMillis();
 		    	}
 	    	}
