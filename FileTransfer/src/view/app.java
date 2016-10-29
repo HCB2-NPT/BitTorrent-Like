@@ -50,15 +50,9 @@ public class app extends Window {
     void request() {
     	String fileName = requestField.getText();
     	if (!MappingFiles.getMap().containsKey(fileName)){
-	    	File f = new File(AppConfig.FOLDER_SEED + fileName);
-	    	if (!f.exists()){
-		    	Thread c = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						Sender.sendRequest(f.getName());
-					}
-				});
-		        c.start();
+    		SeedFile sf = listener.getSeedFileBy(fileName);
+	    	if (sf == null){
+	    		Sender.sendRequest(fileName);
 	    	}
 	    	else{
 	    		Debugger.log("File not exists!");
