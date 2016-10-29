@@ -54,8 +54,8 @@ public class app extends Window {
 	    		Sender.sendRequest(fileName);
 	    	}
 	    	else{
-	    		Debugger.log("File not exists!");
-	    		MessageBox.Show("File not exists!", "Notifying");
+	    		Debugger.log("File exists!");
+	    		MessageBox.Show("File exists!", "Notifying");
 	    	}
 	    }
     	else{
