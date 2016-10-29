@@ -50,13 +50,13 @@ public class app extends Window {
     void request() {
     	String fileName = requestField.getText();
     	if (!MappingFiles.getMap().containsKey(fileName)){
-	    	if (listener.getSeedFileBy(fileName) == null && listener.getSeedFileBy(AppConfig.PREFIX_EMPTY_FILE + fileName) == null){
+//	    	if (listener.getSeedFileBy(fileName) == null && listener.getSeedFileBy(AppConfig.PREFIX_EMPTY_FILE + fileName) == null){
 	    		Sender.sendRequest(fileName);
-	    	}
-	    	else{
-	    		Debugger.log("File not exists!");
-	    		MessageBox.Show("File not exists!", "Notifying");
-	    	}
+//	    	}
+//	    	else{
+//	    		Debugger.log("File not exists!");
+//	    		MessageBox.Show("File not exists!", "Notifying");
+//	    	}
 	    }
     	else{
     		Debugger.log("File being downloaded!");
@@ -73,9 +73,9 @@ public class app extends Window {
     	if (selectedFiles == null)
     		return;
     	for (File selectedFile : selectedFiles) {
-    		if (listener.getSeedFileBy(selectedFile.getName()) == null){
+//    		if (listener.getSeedFileBy(selectedFile.getName()) == null){
     			seedingFile.getItems().add(new SeedFile(selectedFile.getName(), selectedFile.getPath()));
-    		}
+//    		}
     	}
     }
     
@@ -111,44 +111,44 @@ public class app extends Window {
         assert seedingFile != null : "fx:id=\"seedingFile\" was not injected: check your FXML file 'app.fxml'.";
         
         //start server to listen
+        listener = new Listener(new IListenerEvent() {
+			@Override
+			public void ListenFail() {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						MessageBox.Show("Problem creating socket on port: " + AppConfig.PORT, "Shutdown...");
+		            	Platform.exit();
+						System.exit(0);
+					}
+				});
+			}
+			
+			@Override
+			public void ReceiveData(DownloadingFileInfo dfi) {
+				Platform.runLater(new Runnable() {
+	                @Override
+	                public void run() {
+	                	seedingFile.refresh();
+	                }
+	            });
+			}
+			
+			@Override
+			public void DownloadCompleted(DownloadingFileInfo dfi) {
+				Platform.runLater(new Runnable() {
+	                @Override
+	                public void run() {
+	                	//MessageBox.Show(dfi.Name + " is downloaded!", "Notify");
+	                	seedingFile.refresh();
+	                }
+	            });
+			}
+		});
+		listener.setSeedFiles(seedingFile.getItems());
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				listener = new Listener(new IListenerEvent() {
-					@Override
-					public void ListenFail() {
-						Platform.runLater(new Runnable() {
-							@Override
-							public void run() {
-								MessageBox.Show("Problem creating socket on port: " + AppConfig.PORT, "Shutdown...");
-				            	Platform.exit();
-								System.exit(0);
-							}
-						});
-					}
-					
-					@Override
-					public void ReceiveData(DownloadingFileInfo dfi) {
-						Platform.runLater(new Runnable() {
-			                @Override
-			                public void run() {
-			                	seedingFile.refresh();
-			                }
-			            });
-					}
-					
-					@Override
-					public void DownloadCompleted(DownloadingFileInfo dfi) {
-						Platform.runLater(new Runnable() {
-			                @Override
-			                public void run() {
-			                	//MessageBox.Show(dfi.Name + " is downloaded!", "Notify");
-			                	seedingFile.refresh();
-			                }
-			            });
-					}
-				});
-				listener.setSeedFiles(seedingFile.getItems());
 				listener.listen();
 			}
 		}).start();
